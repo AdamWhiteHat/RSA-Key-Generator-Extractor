@@ -30,7 +30,6 @@
         {
             this.groupControls = new System.Windows.Forms.GroupBox();
             this.groupBoxXml = new System.Windows.Forms.GroupBox();
-            this.tbOutput = new System.Windows.Forms.TextBox();
             this.buttonPvkSelectFiles = new System.Windows.Forms.Button();
             this.buttonXmlSelectFiles = new System.Windows.Forms.Button();
             this.radioXmlPQ = new System.Windows.Forms.RadioButton();
@@ -57,6 +56,7 @@
             this.tbFolderSearchPath = new System.Windows.Forms.TextBox();
             this.btnFolderSelect = new System.Windows.Forms.Button();
             this.cbFolderDeleteFiles = new System.Windows.Forms.CheckBox();
+            this.cbXmlPkvDeleteFiles = new System.Windows.Forms.CheckBox();
             this.groupControls.SuspendLayout();
             this.groupBoxXml.SuspendLayout();
             this.groupBoxStore.SuspendLayout();
@@ -83,7 +83,7 @@
             // 
             // groupBoxXml
             // 
-            this.groupBoxXml.Controls.Add(this.tbOutput);
+            this.groupBoxXml.Controls.Add(this.cbXmlPkvDeleteFiles);
             this.groupBoxXml.Controls.Add(this.buttonPvkSelectFiles);
             this.groupBoxXml.Controls.Add(this.buttonXmlSelectFiles);
             this.groupBoxXml.Controls.Add(this.radioXmlPQ);
@@ -94,17 +94,6 @@
             this.groupBoxXml.TabIndex = 4;
             this.groupBoxXml.TabStop = false;
             this.groupBoxXml.Text = "From <RSAKeyValue> XML files or PVK files";
-            // 
-            // tbOutput
-            // 
-            this.tbOutput.BackColor = System.Drawing.SystemColors.Control;
-            this.tbOutput.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.tbOutput.Font = new System.Drawing.Font("Arial", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tbOutput.Location = new System.Drawing.Point(135, 15);
-            this.tbOutput.Multiline = true;
-            this.tbOutput.Name = "tbOutput";
-            this.tbOutput.Size = new System.Drawing.Size(328, 50);
-            this.tbOutput.TabIndex = 4;
             // 
             // buttonPvkSelectFiles
             // 
@@ -131,6 +120,7 @@
             // radioXmlPQ
             // 
             this.radioXmlPQ.AutoSize = true;
+            this.radioXmlPQ.Checked = true;
             this.radioXmlPQ.Location = new System.Drawing.Point(64, 38);
             this.radioXmlPQ.Name = "radioXmlPQ";
             this.radioXmlPQ.Size = new System.Drawing.Size(52, 17);
@@ -405,6 +395,19 @@
             this.cbFolderDeleteFiles.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.cbFolderDeleteFiles.UseVisualStyleBackColor = true;
             // 
+            // cbXmlPkvDeleteFiles
+            // 
+            this.cbXmlPkvDeleteFiles.AutoSize = true;
+            this.cbXmlPkvDeleteFiles.Checked = true;
+            this.cbXmlPkvDeleteFiles.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cbXmlPkvDeleteFiles.Location = new System.Drawing.Point(361, 44);
+            this.cbXmlPkvDeleteFiles.Name = "cbXmlPkvDeleteFiles";
+            this.cbXmlPkvDeleteFiles.Size = new System.Drawing.Size(102, 17);
+            this.cbXmlPkvDeleteFiles.TabIndex = 4;
+            this.cbXmlPkvDeleteFiles.Text = "Delete files after";
+            this.cbXmlPkvDeleteFiles.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.cbXmlPkvDeleteFiles.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -458,7 +461,7 @@
         private System.Windows.Forms.Button buttonXmlSelectFiles;
         private System.Windows.Forms.Button buttonPvkSelectFiles;
         private System.Windows.Forms.CheckBox cbFolderPrivateKeys;
-        private System.Windows.Forms.TextBox tbOutput;
+        private System.Windows.Forms.CheckBox cbXmlPkvDeleteFiles;
     }
 }
 

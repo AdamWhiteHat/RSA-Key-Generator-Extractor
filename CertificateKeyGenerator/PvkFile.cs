@@ -11,27 +11,29 @@ namespace CertificateKeyGenerator
 {
     public class PvkFileExtractor
     {
+        private bool DeleteFiles;
         private string OutputFilename;
         private string SearchDirectory;
-        private IEnumerable<string> filePaths;
+        private IEnumerable<string> FilePaths;
 
         private static string SearchExtension = "*.pvk";
         private static string Header = "-----BEGIN RSA PRIVATE KEY-----";
         private static string Footer = "-----END RSA PRIVATE KEY-----";
 
-        public PvkFileExtractor(string searchDirectory, string outFile)
+        public PvkFileExtractor(string searchDirectory, string outFile, bool deleteFilesAfter)
         {
             if (!Directory.Exists(searchDirectory)) { throw new DirectoryNotFoundException(searchDirectory); }
 
             OutputFilename = outFile;
             SearchDirectory = searchDirectory;
+            DeleteFiles = deleteFilesAfter;
         }
 
         public void Begin()
         {
-            filePaths = Directory.EnumerateFiles(SearchDirectory, SearchExtension, SearchOption.TopDirectoryOnly);
+            FilePaths = Directory.EnumerateFiles(SearchDirectory, SearchExtension, SearchOption.TopDirectoryOnly);
 
-            if (filePaths == null)
+            if (FilePaths == null)
             {
                 throw new Exception("No files to process!");
             }
@@ -39,21 +41,21 @@ namespace CertificateKeyGenerator
             byte[] bytes = new byte[] { };
             ANS1PrivateKey ans1Key = null;
             StringBuilder resultsBuilder = new StringBuilder();
-            foreach (string file in filePaths)
+            foreach (string file in FilePaths)
             {
                 bytes = GetEncodedBytes(file);
-                if(bytes == null)
+                if (bytes == null)
                 {
                     continue;
                 }
 
                 ans1Key = new ANS1PrivateKey(bytes);
                 resultsBuilder.AppendLine(ans1Key.P.ToString());
-                resultsBuilder.AppendLine(ans1Key.Q.ToString());                
+                resultsBuilder.AppendLine(ans1Key.Q.ToString());
 
                 File.AppendAllText(OutputFilename, resultsBuilder.ToString());
 
-                File.Delete(file);
+                DeleteFile(file);
                 resultsBuilder.Clear();
                 ans1Key.Dispose();
                 ans1Key = null;
@@ -63,13 +65,13 @@ namespace CertificateKeyGenerator
                 ans1Key.Dispose();
             }
             resultsBuilder = null;
-            filePaths = null;
+            FilePaths = null;
             bytes = null;
         }
 
         private byte[] GetEncodedBytes(string filename)
         {
-            if(!File.Exists(filename))
+            if (!File.Exists(filename))
             {
                 return null;
             }
@@ -77,7 +79,7 @@ namespace CertificateKeyGenerator
             string fileText = File.ReadAllText(filename);
             if (string.IsNullOrWhiteSpace(fileText))
             {
-                File.Delete(filename);
+                DeleteFile(filename);
                 return null;
             }
 
@@ -90,6 +92,14 @@ namespace CertificateKeyGenerator
             byte[] result = Convert.FromBase64String(fileText);
             fileText = null;
             return result;
+        }
+
+        private void DeleteFile(string filename)
+        {
+            if (DeleteFiles && File.Exists(filename))
+            {
+                File.Delete(filename);
+            }
         }
 
     }

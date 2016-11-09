@@ -26,9 +26,10 @@ namespace CertificateKeyGenerator
         private string rootKeysElement = "Keys";
         private AsyncBackgroundTask backgroundTask;
         private CertificateFileCollection certificates;
+        private string lastDirectory;
 
-        private static string defaultDirectory = @"C:\Maths\My Applications\FactorByGenerating";
-        private static string defaultFileName = "PrivateKeys.{0}.Output.txt";
+        private static string DefaultDirectory = @"C:\Maths\My Applications\FactorByGenerating";
+        private static string DefaultFileName = "PrivateKeys.{0}.Output.txt";
 
         public MainForm()
         {
@@ -40,6 +41,7 @@ namespace CertificateKeyGenerator
             btnFolderCertBegin.Enabled = false;
             radioXmlModulus.Checked = true;
             //cbDeleteFiles.Checked = true;
+            lastDirectory = DefaultDirectory;
             backgroundTask = new AsyncBackgroundTask();
         }
 
@@ -62,7 +64,7 @@ namespace CertificateKeyGenerator
             // Disable UI
             groupControls.Enabled = false;
 
-            PvkFileExtractor pvkFile = new PvkFileExtractor(directory, outFile);
+            PvkFileExtractor pvkFile = new PvkFileExtractor(directory, outFile, cbXmlPkvDeleteFiles.Checked);
             pvkFile.Begin();
 
 
@@ -338,9 +340,10 @@ namespace CertificateKeyGenerator
             {
                 browseForFolder.Description = "Select search folder";
                 browseForFolder.RootFolder = Environment.SpecialFolder.MyComputer;
-                browseForFolder.SelectedPath = defaultDirectory;
+                browseForFolder.SelectedPath = lastDirectory;
                 if (browseForFolder.ShowDialog() == DialogResult.OK)
                 {
+                    lastDirectory = browseForFolder.SelectedPath;
                     return browseForFolder.SelectedPath;
                 }
             }
@@ -353,10 +356,11 @@ namespace CertificateKeyGenerator
             {
                 saveDialog.Title = "Select output file";
                 saveDialog.OverwritePrompt = false;               
-                saveDialog.InitialDirectory = defaultDirectory;                
-                saveDialog.FileName = string.Format(defaultFileName, fileCounter++);                
+                saveDialog.InitialDirectory = lastDirectory;                
+                saveDialog.FileName = string.Format(DefaultFileName, fileCounter++);                
                 if (saveDialog.ShowDialog() == DialogResult.OK)
                 {
+                    lastDirectory = Path.GetDirectoryName(saveDialog.FileName);
                     return saveDialog.FileName;
                 }
             }
@@ -368,9 +372,10 @@ namespace CertificateKeyGenerator
             using (OpenFileDialog openDialog = new OpenFileDialog())
             {
                 openDialog.Title = "Select file to open";
-                openDialog.InitialDirectory = defaultDirectory;
+                openDialog.InitialDirectory = lastDirectory;
                 if (openDialog.ShowDialog() == DialogResult.OK)
                 {
+                    lastDirectory = Path.GetDirectoryName(openDialog.FileName);
                     return openDialog.FileName;
                 }
             }
