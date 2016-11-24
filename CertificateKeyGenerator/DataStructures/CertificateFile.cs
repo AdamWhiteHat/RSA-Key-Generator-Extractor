@@ -16,15 +16,19 @@ namespace CertificateKeyGenerator
         public string FileLocation { get; private set; }
         public X509Certificate2 Certificate { get; private set; }
 
+        private bool fileExists;
+
         public CertificateFile(X509Certificate2 cert)
         {
-            Certificate = cert;
+            this.fileExists = false;
+            this.Certificate = cert;
         }
 
         public CertificateFile(string fileLocation)
         {
             if (string.IsNullOrWhiteSpace(fileLocation)) { throw new ArgumentException(); }
-            if (!File.Exists(fileLocation)) { throw new FileNotFoundException(); }
+            this.fileExists = File.Exists(fileLocation);
+            if (!fileExists) { throw new FileNotFoundException(); }
 
             this.FileLocation = fileLocation;
             this.Certificate = new X509Certificate2(FileLocation, "", X509KeyStorageFlags.Exportable);
@@ -54,10 +58,11 @@ namespace CertificateKeyGenerator
         }
 
         public void Remove()
-        {            
-            if (!string.IsNullOrWhiteSpace(FileLocation) && File.Exists(FileLocation))
+        {
+            if (fileExists && !string.IsNullOrWhiteSpace(FileLocation))
             {
                 File.Delete(FileLocation);
+                fileExists = false;
                 FileLocation = null;
             }
 

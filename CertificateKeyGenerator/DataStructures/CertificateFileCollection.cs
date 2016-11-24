@@ -15,17 +15,19 @@ namespace CertificateKeyGenerator
         public int DuplicateFilesFound { get; private set; }
         public string SourceDirectory { get; private set; }
         public IEnumerable<CertificateFile> CertificateFiles { get; private set; }
-
+                
         private bool privateKey;
+        private bool removeFiles;
         private string searchExtension;
 
-        public CertificateFileCollection(string searchDirectory, bool searchPrivateKeys)
+        public CertificateFileCollection(string searchDirectory, bool searchPrivateKeys, bool removeFiles)
         {
             if (string.IsNullOrWhiteSpace(searchDirectory)) { throw new ArgumentException("Argument path must not be null, empty or whitespace", "path"); }
             if (!Directory.Exists(searchDirectory)) { throw new DirectoryNotFoundException("Path must exist: " + searchDirectory); }
 
             this.privateKey = searchPrivateKeys;
-            this.SourceDirectory = searchDirectory;
+            this.removeFiles = removeFiles;
+            this.SourceDirectory = searchDirectory.TrimEnd(new char[] { Path.DirectorySeparatorChar });
             this.searchExtension = searchExtension = privateKey ? CertificateFile.PrivateKeyFileExtension : CertificateFile.PublicKeyFileExtension;
 
             IEnumerable<string> filePaths = Directory.EnumerateFiles(SourceDirectory, searchExtension, SearchOption.TopDirectoryOnly);
@@ -36,7 +38,7 @@ namespace CertificateKeyGenerator
         {
             CertificateFiles = certificates;
         }
-
+        
         public List<string> GetPublicKeys()
         {
             int dupes = 0;
@@ -63,6 +65,10 @@ namespace CertificateKeyGenerator
             foreach (CertificateFile cert in CertificateFiles)
             {
                 results.Add(cert.GetPrivateKey());
+                if(removeFiles)
+                {
+                    cert.Remove();
+                }
             }
             return results;
         }
@@ -73,6 +79,10 @@ namespace CertificateKeyGenerator
             foreach (CertificateFile cert in CertificateFiles)
             {
                 results.AddRange(EncodingUtility.ExtractPandQ(cert.GetPrivateKey()));
+                if (removeFiles)
+                {
+                    cert.Remove();
+                }
             }
             return results;
         }
@@ -87,24 +97,6 @@ namespace CertificateKeyGenerator
             {
                 return GetPublicKeys();
             }
-        }
-
-        public void RemoveAllFiles()
-        {
-            using (Process proc = new Process())
-            {
-                ProcessStartInfo procStartInfo = new ProcessStartInfo();
-                procStartInfo.FileName = "cmd.exe";
-                procStartInfo.Arguments = string.Format(@"/c del /q ""{0}""", SourceDirectory);
-                procStartInfo.UseShellExecute = false;
-                procStartInfo.CreateNoWindow = true;
-                procStartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-
-                proc.StartInfo = procStartInfo;
-                proc.Start();
-                proc.WaitForExit();
-            }
-            CertificateFiles = new CertificateFile[] { };
-        }
+        }        
     }
 }

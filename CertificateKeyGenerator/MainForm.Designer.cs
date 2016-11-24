@@ -28,19 +28,21 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.groupControls = new System.Windows.Forms.GroupBox();
-            this.groupBoxXml = new System.Windows.Forms.GroupBox();
-            this.buttonPvkSelectFiles = new System.Windows.Forms.Button();
-            this.buttonXmlSelectFiles = new System.Windows.Forms.Button();
-            this.radioXmlPQ = new System.Windows.Forms.RadioButton();
-            this.radioXmlModulus = new System.Windows.Forms.RadioButton();
-            this.groupBoxStore = new System.Windows.Forms.GroupBox();
-            this.panelStoreCombo = new System.Windows.Forms.Panel();
-            this.comboStoreName = new System.Windows.Forms.ComboBox();
-            this.comboStoreLocation = new System.Windows.Forms.ComboBox();
-            this.cbStoreAll = new System.Windows.Forms.CheckBox();
-            this.btnStoreExtract = new System.Windows.Forms.Button();
-            this.groupBoxGenerate = new System.Windows.Forms.GroupBox();
+            this.groupExtract = new System.Windows.Forms.GroupBox();
+            this.groupExtractFromFiles = new System.Windows.Forms.GroupBox();
+            this.btnExtractFolderCertBegin = new System.Windows.Forms.Button();
+            this.btnExtractPvkSelectFiles = new System.Windows.Forms.Button();
+            this.cbExtractDeleteFiles = new System.Windows.Forms.CheckBox();
+            this.btnExtractXmlSelectFiles = new System.Windows.Forms.Button();
+            this.radioExtractPQOnly = new System.Windows.Forms.RadioButton();
+            this.radioExtractWholeKey = new System.Windows.Forms.RadioButton();
+            this.groupExtractFromStore = new System.Windows.Forms.GroupBox();
+            this.panelExtractKeystoreCombo = new System.Windows.Forms.Panel();
+            this.comboExtractKeystoreName = new System.Windows.Forms.ComboBox();
+            this.comboExtractKeystoreLocation = new System.Windows.Forms.ComboBox();
+            this.cbExtractAllKeystore = new System.Windows.Forms.CheckBox();
+            this.btnExtractKeystore = new System.Windows.Forms.Button();
+            this.groupGenerateCryptoAPI = new System.Windows.Forms.GroupBox();
             this.cbGenerateOnlyPrimes = new System.Windows.Forms.CheckBox();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -50,124 +52,150 @@
             this.tbGenerateTimeout = new System.Windows.Forms.TextBox();
             this.tbGenerateQuantity = new System.Windows.Forms.TextBox();
             this.btnGenerateQuantity = new System.Windows.Forms.Button();
-            this.groupBoxFolder = new System.Windows.Forms.GroupBox();
-            this.cbFolderPrivateKeys = new System.Windows.Forms.CheckBox();
-            this.btnFolderCertBegin = new System.Windows.Forms.Button();
-            this.tbFolderSearchPath = new System.Windows.Forms.TextBox();
-            this.btnFolderSelect = new System.Windows.Forms.Button();
-            this.cbFolderDeleteFiles = new System.Windows.Forms.CheckBox();
-            this.cbXmlPkvDeleteFiles = new System.Windows.Forms.CheckBox();
-            this.groupControls.SuspendLayout();
-            this.groupBoxXml.SuspendLayout();
-            this.groupBoxStore.SuspendLayout();
-            this.panelStoreCombo.SuspendLayout();
-            this.groupBoxGenerate.SuspendLayout();
-            this.groupBoxFolder.SuspendLayout();
+            this.panelCancel = new System.Windows.Forms.Panel();
+            this.btnCancel = new System.Windows.Forms.Button();
+            this.groupGenerate = new System.Windows.Forms.GroupBox();
+            this.groupGenerateOpenSSL = new System.Windows.Forms.GroupBox();
+            this.btnGenerateOpenSSL = new System.Windows.Forms.Button();
+            this.tbGenerateOpenSSLCommandText = new System.Windows.Forms.TextBox();
+            this.groupAllControls = new System.Windows.Forms.Panel();
+            this.groupExtract.SuspendLayout();
+            this.groupExtractFromFiles.SuspendLayout();
+            this.groupExtractFromStore.SuspendLayout();
+            this.panelExtractKeystoreCombo.SuspendLayout();
+            this.groupGenerateCryptoAPI.SuspendLayout();
+            this.panelCancel.SuspendLayout();
+            this.groupGenerate.SuspendLayout();
+            this.groupGenerateOpenSSL.SuspendLayout();
+            this.groupAllControls.SuspendLayout();
             this.SuspendLayout();
             // 
-            // groupControls
+            // groupExtract
             // 
-            this.groupControls.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.groupExtract.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupControls.Controls.Add(this.groupBoxXml);
-            this.groupControls.Controls.Add(this.groupBoxStore);
-            this.groupControls.Controls.Add(this.groupBoxGenerate);
-            this.groupControls.Controls.Add(this.groupBoxFolder);
-            this.groupControls.Location = new System.Drawing.Point(12, 12);
-            this.groupControls.Name = "groupControls";
-            this.groupControls.Size = new System.Drawing.Size(610, 312);
-            this.groupControls.TabIndex = 0;
-            this.groupControls.TabStop = false;
-            this.groupControls.Text = "Extract public & private keys";
+            this.groupExtract.Controls.Add(this.groupExtractFromFiles);
+            this.groupExtract.Controls.Add(this.groupExtractFromStore);
+            this.groupExtract.ForeColor = System.Drawing.Color.Black;
+            this.groupExtract.Location = new System.Drawing.Point(3, 3);
+            this.groupExtract.Name = "groupExtract";
+            this.groupExtract.Size = new System.Drawing.Size(604, 155);
+            this.groupExtract.TabIndex = 0;
+            this.groupExtract.TabStop = false;
+            this.groupExtract.Text = "Extract public && private keys";
             // 
-            // groupBoxXml
+            // groupExtractFromFiles
             // 
-            this.groupBoxXml.Controls.Add(this.cbXmlPkvDeleteFiles);
-            this.groupBoxXml.Controls.Add(this.buttonPvkSelectFiles);
-            this.groupBoxXml.Controls.Add(this.buttonXmlSelectFiles);
-            this.groupBoxXml.Controls.Add(this.radioXmlPQ);
-            this.groupBoxXml.Controls.Add(this.radioXmlModulus);
-            this.groupBoxXml.Location = new System.Drawing.Point(18, 228);
-            this.groupBoxXml.Name = "groupBoxXml";
-            this.groupBoxXml.Size = new System.Drawing.Size(576, 71);
-            this.groupBoxXml.TabIndex = 4;
-            this.groupBoxXml.TabStop = false;
-            this.groupBoxXml.Text = "From <RSAKeyValue> XML files or PVK files";
+            this.groupExtractFromFiles.Controls.Add(this.btnExtractFolderCertBegin);
+            this.groupExtractFromFiles.Controls.Add(this.btnExtractPvkSelectFiles);
+            this.groupExtractFromFiles.Controls.Add(this.cbExtractDeleteFiles);
+            this.groupExtractFromFiles.Controls.Add(this.btnExtractXmlSelectFiles);
+            this.groupExtractFromFiles.Controls.Add(this.radioExtractPQOnly);
+            this.groupExtractFromFiles.Controls.Add(this.radioExtractWholeKey);
+            this.groupExtractFromFiles.Location = new System.Drawing.Point(18, 72);
+            this.groupExtractFromFiles.Name = "groupExtractFromFiles";
+            this.groupExtractFromFiles.Size = new System.Drawing.Size(576, 69);
+            this.groupExtractFromFiles.TabIndex = 4;
+            this.groupExtractFromFiles.TabStop = false;
+            this.groupExtractFromFiles.Text = "From <RSAKeyValue> XML files or PVK files";
             // 
-            // buttonPvkSelectFiles
+            // btnExtractFolderCertBegin
             // 
-            this.buttonPvkSelectFiles.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonPvkSelectFiles.Location = new System.Drawing.Point(470, 40);
-            this.buttonPvkSelectFiles.Name = "buttonPvkSelectFiles";
-            this.buttonPvkSelectFiles.Size = new System.Drawing.Size(100, 23);
-            this.buttonPvkSelectFiles.TabIndex = 3;
-            this.buttonPvkSelectFiles.Text = "Select PVK files...";
-            this.buttonPvkSelectFiles.UseVisualStyleBackColor = true;
-            this.buttonPvkSelectFiles.Click += new System.EventHandler(this.buttonPvkSelectFiles_Click);
+            this.btnExtractFolderCertBegin.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnExtractFolderCertBegin.Location = new System.Drawing.Point(469, 18);
+            this.btnExtractFolderCertBegin.Name = "btnExtractFolderCertBegin";
+            this.btnExtractFolderCertBegin.Size = new System.Drawing.Size(100, 23);
+            this.btnExtractFolderCertBegin.TabIndex = 2;
+            this.btnExtractFolderCertBegin.Text = "Select CER Files";
+            this.btnExtractFolderCertBegin.UseVisualStyleBackColor = true;
+            this.btnExtractFolderCertBegin.Click += new System.EventHandler(this.btnExtractFolderCertBegin_Click);
             // 
-            // buttonXmlSelectFiles
+            // btnExtractPvkSelectFiles
             // 
-            this.buttonXmlSelectFiles.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonXmlSelectFiles.Location = new System.Drawing.Point(470, 15);
-            this.buttonXmlSelectFiles.Name = "buttonXmlSelectFiles";
-            this.buttonXmlSelectFiles.Size = new System.Drawing.Size(100, 23);
-            this.buttonXmlSelectFiles.TabIndex = 2;
-            this.buttonXmlSelectFiles.Text = "Select XML files...";
-            this.buttonXmlSelectFiles.UseVisualStyleBackColor = true;
-            this.buttonXmlSelectFiles.Click += new System.EventHandler(this.buttonXmlSelectFiles_Click);
+            this.btnExtractPvkSelectFiles.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnExtractPvkSelectFiles.Location = new System.Drawing.Point(366, 18);
+            this.btnExtractPvkSelectFiles.Name = "btnExtractPvkSelectFiles";
+            this.btnExtractPvkSelectFiles.Size = new System.Drawing.Size(100, 23);
+            this.btnExtractPvkSelectFiles.TabIndex = 3;
+            this.btnExtractPvkSelectFiles.Text = "Select PVK files...";
+            this.btnExtractPvkSelectFiles.UseVisualStyleBackColor = true;
+            this.btnExtractPvkSelectFiles.Click += new System.EventHandler(this.btnExtractPvkSelectFiles_Click);
             // 
-            // radioXmlPQ
+            // cbExtractDeleteFiles
             // 
-            this.radioXmlPQ.AutoSize = true;
-            this.radioXmlPQ.Checked = true;
-            this.radioXmlPQ.Location = new System.Drawing.Point(64, 38);
-            this.radioXmlPQ.Name = "radioXmlPQ";
-            this.radioXmlPQ.Size = new System.Drawing.Size(52, 17);
-            this.radioXmlPQ.TabIndex = 1;
-            this.radioXmlPQ.TabStop = true;
-            this.radioXmlPQ.Text = "P && Q";
-            this.radioXmlPQ.UseVisualStyleBackColor = true;
+            this.cbExtractDeleteFiles.AutoSize = true;
+            this.cbExtractDeleteFiles.Checked = true;
+            this.cbExtractDeleteFiles.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cbExtractDeleteFiles.Location = new System.Drawing.Point(270, 44);
+            this.cbExtractDeleteFiles.Name = "cbExtractDeleteFiles";
+            this.cbExtractDeleteFiles.Size = new System.Drawing.Size(151, 17);
+            this.cbExtractDeleteFiles.TabIndex = 1;
+            this.cbExtractDeleteFiles.Text = "Delete files after extraction";
+            this.cbExtractDeleteFiles.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.cbExtractDeleteFiles.UseVisualStyleBackColor = true;
             // 
-            // radioXmlModulus
+            // btnExtractXmlSelectFiles
             // 
-            this.radioXmlModulus.AutoSize = true;
-            this.radioXmlModulus.Location = new System.Drawing.Point(64, 19);
-            this.radioXmlModulus.Name = "radioXmlModulus";
-            this.radioXmlModulus.Size = new System.Drawing.Size(65, 17);
-            this.radioXmlModulus.TabIndex = 0;
-            this.radioXmlModulus.TabStop = true;
-            this.radioXmlModulus.Text = "Modulus";
-            this.radioXmlModulus.UseVisualStyleBackColor = true;
+            this.btnExtractXmlSelectFiles.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnExtractXmlSelectFiles.Location = new System.Drawing.Point(263, 18);
+            this.btnExtractXmlSelectFiles.Name = "btnExtractXmlSelectFiles";
+            this.btnExtractXmlSelectFiles.Size = new System.Drawing.Size(100, 23);
+            this.btnExtractXmlSelectFiles.TabIndex = 2;
+            this.btnExtractXmlSelectFiles.Text = "Select XML files...";
+            this.btnExtractXmlSelectFiles.UseVisualStyleBackColor = true;
+            this.btnExtractXmlSelectFiles.Click += new System.EventHandler(this.btnExtractXmlSelectFiles_Click);
             // 
-            // groupBoxStore
+            // radioExtractPQOnly
             // 
-            this.groupBoxStore.Controls.Add(this.panelStoreCombo);
-            this.groupBoxStore.Controls.Add(this.cbStoreAll);
-            this.groupBoxStore.Controls.Add(this.btnStoreExtract);
-            this.groupBoxStore.Location = new System.Drawing.Point(18, 19);
-            this.groupBoxStore.Name = "groupBoxStore";
-            this.groupBoxStore.Size = new System.Drawing.Size(576, 47);
-            this.groupBoxStore.TabIndex = 3;
-            this.groupBoxStore.TabStop = false;
-            this.groupBoxStore.Text = "From a certificate store";
+            this.radioExtractPQOnly.AutoSize = true;
+            this.radioExtractPQOnly.Checked = true;
+            this.radioExtractPQOnly.Location = new System.Drawing.Point(30, 21);
+            this.radioExtractPQOnly.Name = "radioExtractPQOnly";
+            this.radioExtractPQOnly.Size = new System.Drawing.Size(74, 17);
+            this.radioExtractPQOnly.TabIndex = 1;
+            this.radioExtractPQOnly.TabStop = true;
+            this.radioExtractPQOnly.Text = "P && Q only";
+            this.radioExtractPQOnly.UseVisualStyleBackColor = true;
             // 
-            // panelStoreCombo
+            // radioExtractWholeKey
             // 
-            this.panelStoreCombo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.radioExtractWholeKey.AutoSize = true;
+            this.radioExtractWholeKey.Location = new System.Drawing.Point(30, 43);
+            this.radioExtractWholeKey.Name = "radioExtractWholeKey";
+            this.radioExtractWholeKey.Size = new System.Drawing.Size(56, 17);
+            this.radioExtractWholeKey.TabIndex = 0;
+            this.radioExtractWholeKey.TabStop = true;
+            this.radioExtractWholeKey.Text = "All of it";
+            this.radioExtractWholeKey.UseVisualStyleBackColor = true;
+            // 
+            // groupExtractFromStore
+            // 
+            this.groupExtractFromStore.Controls.Add(this.panelExtractKeystoreCombo);
+            this.groupExtractFromStore.Controls.Add(this.cbExtractAllKeystore);
+            this.groupExtractFromStore.Controls.Add(this.btnExtractKeystore);
+            this.groupExtractFromStore.Location = new System.Drawing.Point(18, 19);
+            this.groupExtractFromStore.Name = "groupExtractFromStore";
+            this.groupExtractFromStore.Size = new System.Drawing.Size(576, 47);
+            this.groupExtractFromStore.TabIndex = 3;
+            this.groupExtractFromStore.TabStop = false;
+            this.groupExtractFromStore.Text = "From a certificate store";
+            // 
+            // panelExtractKeystoreCombo
+            // 
+            this.panelExtractKeystoreCombo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.panelStoreCombo.Controls.Add(this.comboStoreName);
-            this.panelStoreCombo.Controls.Add(this.comboStoreLocation);
-            this.panelStoreCombo.Location = new System.Drawing.Point(153, 12);
-            this.panelStoreCombo.Name = "panelStoreCombo";
-            this.panelStoreCombo.Size = new System.Drawing.Size(310, 32);
-            this.panelStoreCombo.TabIndex = 2;
+            this.panelExtractKeystoreCombo.Controls.Add(this.comboExtractKeystoreName);
+            this.panelExtractKeystoreCombo.Controls.Add(this.comboExtractKeystoreLocation);
+            this.panelExtractKeystoreCombo.Location = new System.Drawing.Point(153, 12);
+            this.panelExtractKeystoreCombo.Name = "panelExtractKeystoreCombo";
+            this.panelExtractKeystoreCombo.Size = new System.Drawing.Size(310, 32);
+            this.panelExtractKeystoreCombo.TabIndex = 2;
             // 
-            // comboStoreName
+            // comboExtractKeystoreName
             // 
-            this.comboStoreName.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.comboStoreName.FormattingEnabled = true;
-            this.comboStoreName.Items.AddRange(new object[] {
+            this.comboExtractKeystoreName.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.comboExtractKeystoreName.FormattingEnabled = true;
+            this.comboExtractKeystoreName.Items.AddRange(new object[] {
             "AddressBook",
             "AuthRoot",
             "CertificateAuthority",
@@ -176,64 +204,64 @@
             "Root",
             "TrustedPeople",
             "TrustedPublisher"});
-            this.comboStoreName.Location = new System.Drawing.Point(144, 5);
-            this.comboStoreName.Name = "comboStoreName";
-            this.comboStoreName.Size = new System.Drawing.Size(124, 21);
-            this.comboStoreName.TabIndex = 1;
-            this.comboStoreName.Text = "CertificateAuthority";
+            this.comboExtractKeystoreName.Location = new System.Drawing.Point(144, 5);
+            this.comboExtractKeystoreName.Name = "comboExtractKeystoreName";
+            this.comboExtractKeystoreName.Size = new System.Drawing.Size(124, 21);
+            this.comboExtractKeystoreName.TabIndex = 1;
+            this.comboExtractKeystoreName.Text = "CertificateAuthority";
             // 
-            // comboStoreLocation
+            // comboExtractKeystoreLocation
             // 
-            this.comboStoreLocation.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.comboStoreLocation.FormattingEnabled = true;
-            this.comboStoreLocation.Items.AddRange(new object[] {
+            this.comboExtractKeystoreLocation.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.comboExtractKeystoreLocation.FormattingEnabled = true;
+            this.comboExtractKeystoreLocation.Items.AddRange(new object[] {
             "CurrentUser",
             "LocalMachine"});
-            this.comboStoreLocation.Location = new System.Drawing.Point(32, 5);
-            this.comboStoreLocation.Name = "comboStoreLocation";
-            this.comboStoreLocation.Size = new System.Drawing.Size(106, 21);
-            this.comboStoreLocation.TabIndex = 0;
-            this.comboStoreLocation.Text = "CurrentUser";
+            this.comboExtractKeystoreLocation.Location = new System.Drawing.Point(32, 5);
+            this.comboExtractKeystoreLocation.Name = "comboExtractKeystoreLocation";
+            this.comboExtractKeystoreLocation.Size = new System.Drawing.Size(106, 21);
+            this.comboExtractKeystoreLocation.TabIndex = 0;
+            this.comboExtractKeystoreLocation.Text = "CurrentUser";
             // 
-            // cbStoreAll
+            // cbExtractAllKeystore
             // 
-            this.cbStoreAll.AutoSize = true;
-            this.cbStoreAll.Location = new System.Drawing.Point(30, 19);
-            this.cbStoreAll.Name = "cbStoreAll";
-            this.cbStoreAll.Size = new System.Drawing.Size(117, 17);
-            this.cbStoreAll.TabIndex = 1;
-            this.cbStoreAll.Text = "All certificate stores";
-            this.cbStoreAll.UseVisualStyleBackColor = true;
-            this.cbStoreAll.CheckedChanged += new System.EventHandler(this.cbStoreAll_CheckedChanged);
+            this.cbExtractAllKeystore.AutoSize = true;
+            this.cbExtractAllKeystore.Location = new System.Drawing.Point(30, 19);
+            this.cbExtractAllKeystore.Name = "cbExtractAllKeystore";
+            this.cbExtractAllKeystore.Size = new System.Drawing.Size(117, 17);
+            this.cbExtractAllKeystore.TabIndex = 1;
+            this.cbExtractAllKeystore.Text = "All certificate stores";
+            this.cbExtractAllKeystore.UseVisualStyleBackColor = true;
+            this.cbExtractAllKeystore.CheckedChanged += new System.EventHandler(this.cbExtractAllKeystore_CheckedChanged);
             // 
-            // btnStoreExtract
+            // btnExtractKeystore
             // 
-            this.btnStoreExtract.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnStoreExtract.Location = new System.Drawing.Point(470, 15);
-            this.btnStoreExtract.Name = "btnStoreExtract";
-            this.btnStoreExtract.Size = new System.Drawing.Size(100, 23);
-            this.btnStoreExtract.TabIndex = 0;
-            this.btnStoreExtract.Text = "Extract";
-            this.btnStoreExtract.UseVisualStyleBackColor = true;
-            this.btnStoreExtract.Click += new System.EventHandler(this.btnStoreExtract_Click);
+            this.btnExtractKeystore.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnExtractKeystore.Location = new System.Drawing.Point(470, 15);
+            this.btnExtractKeystore.Name = "btnExtractKeystore";
+            this.btnExtractKeystore.Size = new System.Drawing.Size(100, 23);
+            this.btnExtractKeystore.TabIndex = 0;
+            this.btnExtractKeystore.Text = "Extract";
+            this.btnExtractKeystore.UseVisualStyleBackColor = true;
+            this.btnExtractKeystore.Click += new System.EventHandler(this.btnExtractKeystore_Click);
             // 
-            // groupBoxGenerate
+            // groupGenerateCryptoAPI
             // 
-            this.groupBoxGenerate.Controls.Add(this.cbGenerateOnlyPrimes);
-            this.groupBoxGenerate.Controls.Add(this.label4);
-            this.groupBoxGenerate.Controls.Add(this.label3);
-            this.groupBoxGenerate.Controls.Add(this.tbGenerateKeysize);
-            this.groupBoxGenerate.Controls.Add(this.label2);
-            this.groupBoxGenerate.Controls.Add(this.label1);
-            this.groupBoxGenerate.Controls.Add(this.tbGenerateTimeout);
-            this.groupBoxGenerate.Controls.Add(this.tbGenerateQuantity);
-            this.groupBoxGenerate.Controls.Add(this.btnGenerateQuantity);
-            this.groupBoxGenerate.Location = new System.Drawing.Point(18, 150);
-            this.groupBoxGenerate.Name = "groupBoxGenerate";
-            this.groupBoxGenerate.Size = new System.Drawing.Size(576, 72);
-            this.groupBoxGenerate.TabIndex = 2;
-            this.groupBoxGenerate.TabStop = false;
-            this.groupBoxGenerate.Text = "Generate from Microsoft Cryptographic API";
+            this.groupGenerateCryptoAPI.Controls.Add(this.cbGenerateOnlyPrimes);
+            this.groupGenerateCryptoAPI.Controls.Add(this.label4);
+            this.groupGenerateCryptoAPI.Controls.Add(this.label3);
+            this.groupGenerateCryptoAPI.Controls.Add(this.tbGenerateKeysize);
+            this.groupGenerateCryptoAPI.Controls.Add(this.label2);
+            this.groupGenerateCryptoAPI.Controls.Add(this.label1);
+            this.groupGenerateCryptoAPI.Controls.Add(this.tbGenerateTimeout);
+            this.groupGenerateCryptoAPI.Controls.Add(this.tbGenerateQuantity);
+            this.groupGenerateCryptoAPI.Controls.Add(this.btnGenerateQuantity);
+            this.groupGenerateCryptoAPI.Location = new System.Drawing.Point(18, 19);
+            this.groupGenerateCryptoAPI.Name = "groupGenerateCryptoAPI";
+            this.groupGenerateCryptoAPI.Size = new System.Drawing.Size(576, 72);
+            this.groupGenerateCryptoAPI.TabIndex = 2;
+            this.groupGenerateCryptoAPI.TabStop = false;
+            this.groupGenerateCryptoAPI.Text = "Generate from Microsoft Cryptographic API";
             // 
             // cbGenerateOnlyPrimes
             // 
@@ -326,120 +354,115 @@
             this.btnGenerateQuantity.UseVisualStyleBackColor = true;
             this.btnGenerateQuantity.Click += new System.EventHandler(this.btnGenerateQuantity_Click);
             // 
-            // groupBoxFolder
+            // panelCancel
             // 
-            this.groupBoxFolder.Controls.Add(this.cbFolderPrivateKeys);
-            this.groupBoxFolder.Controls.Add(this.btnFolderCertBegin);
-            this.groupBoxFolder.Controls.Add(this.tbFolderSearchPath);
-            this.groupBoxFolder.Controls.Add(this.btnFolderSelect);
-            this.groupBoxFolder.Controls.Add(this.cbFolderDeleteFiles);
-            this.groupBoxFolder.Location = new System.Drawing.Point(18, 72);
-            this.groupBoxFolder.Name = "groupBoxFolder";
-            this.groupBoxFolder.Size = new System.Drawing.Size(576, 72);
-            this.groupBoxFolder.TabIndex = 1;
-            this.groupBoxFolder.TabStop = false;
-            this.groupBoxFolder.Text = "From a folder containing certificate (*.cer) or private key (*.pvk) files";
+            this.panelCancel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.panelCancel.BackColor = System.Drawing.Color.Transparent;
+            this.panelCancel.Controls.Add(this.btnCancel);
+            this.panelCancel.Location = new System.Drawing.Point(215, 152);
+            this.panelCancel.Name = "panelCancel";
+            this.panelCancel.Size = new System.Drawing.Size(192, 52);
+            this.panelCancel.TabIndex = 5;
             // 
-            // cbFolderPrivateKeys
+            // btnCancel
             // 
-            this.cbFolderPrivateKeys.AutoSize = true;
-            this.cbFolderPrivateKeys.Checked = true;
-            this.cbFolderPrivateKeys.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cbFolderPrivateKeys.Location = new System.Drawing.Point(116, 43);
-            this.cbFolderPrivateKeys.Name = "cbFolderPrivateKeys";
-            this.cbFolderPrivateKeys.Size = new System.Drawing.Size(85, 17);
-            this.cbFolderPrivateKeys.TabIndex = 4;
-            this.cbFolderPrivateKeys.Text = "Private Keys";
-            this.cbFolderPrivateKeys.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.cbFolderPrivateKeys.UseVisualStyleBackColor = true;
+            this.btnCancel.Location = new System.Drawing.Point(4, 2);
+            this.btnCancel.Name = "btnCancel";
+            this.btnCancel.Size = new System.Drawing.Size(185, 48);
+            this.btnCancel.TabIndex = 0;
+            this.btnCancel.Text = "Click here to cancel...";
+            this.btnCancel.UseVisualStyleBackColor = true;
+            this.btnCancel.Click += new System.EventHandler(this.tbCancel_Click);
             // 
-            // btnFolderCertBegin
+            // groupGenerate
             // 
-            this.btnFolderCertBegin.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnFolderCertBegin.Location = new System.Drawing.Point(470, 41);
-            this.btnFolderCertBegin.Name = "btnFolderCertBegin";
-            this.btnFolderCertBegin.Size = new System.Drawing.Size(100, 23);
-            this.btnFolderCertBegin.TabIndex = 2;
-            this.btnFolderCertBegin.Text = "Begin";
-            this.btnFolderCertBegin.UseVisualStyleBackColor = true;
-            this.btnFolderCertBegin.Click += new System.EventHandler(this.btnFolderCertBegin_Click);
-            // 
-            // tbFolderSearchPath
-            // 
-            this.tbFolderSearchPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.groupGenerate.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tbFolderSearchPath.Location = new System.Drawing.Point(112, 21);
-            this.tbFolderSearchPath.Name = "tbFolderSearchPath";
-            this.tbFolderSearchPath.ReadOnly = true;
-            this.tbFolderSearchPath.Size = new System.Drawing.Size(458, 20);
-            this.tbFolderSearchPath.TabIndex = 2;
+            this.groupGenerate.Controls.Add(this.groupGenerateOpenSSL);
+            this.groupGenerate.Controls.Add(this.groupGenerateCryptoAPI);
+            this.groupGenerate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.groupGenerate.Location = new System.Drawing.Point(3, 173);
+            this.groupGenerate.Name = "groupGenerate";
+            this.groupGenerate.Size = new System.Drawing.Size(604, 194);
+            this.groupGenerate.TabIndex = 6;
+            this.groupGenerate.TabStop = false;
+            this.groupGenerate.Text = "Generate keys";
             // 
-            // btnFolderSelect
+            // groupGenerateOpenSSL
             // 
-            this.btnFolderSelect.Location = new System.Drawing.Point(6, 19);
-            this.btnFolderSelect.Name = "btnFolderSelect";
-            this.btnFolderSelect.Size = new System.Drawing.Size(100, 23);
-            this.btnFolderSelect.TabIndex = 0;
-            this.btnFolderSelect.Text = "Select a folder...";
-            this.btnFolderSelect.UseVisualStyleBackColor = true;
-            this.btnFolderSelect.Click += new System.EventHandler(this.btnSelectFolder_Click);
+            this.groupGenerateOpenSSL.Controls.Add(this.btnGenerateOpenSSL);
+            this.groupGenerateOpenSSL.Controls.Add(this.tbGenerateOpenSSLCommandText);
+            this.groupGenerateOpenSSL.Enabled = false;
+            this.groupGenerateOpenSSL.Location = new System.Drawing.Point(18, 97);
+            this.groupGenerateOpenSSL.Name = "groupGenerateOpenSSL";
+            this.groupGenerateOpenSSL.Size = new System.Drawing.Size(576, 83);
+            this.groupGenerateOpenSSL.TabIndex = 3;
+            this.groupGenerateOpenSSL.TabStop = false;
+            this.groupGenerateOpenSSL.Text = "Open SSL via command line";
             // 
-            // cbFolderDeleteFiles
+            // btnGenerateOpenSSL
             // 
-            this.cbFolderDeleteFiles.AutoSize = true;
-            this.cbFolderDeleteFiles.Location = new System.Drawing.Point(206, 43);
-            this.cbFolderDeleteFiles.Name = "cbFolderDeleteFiles";
-            this.cbFolderDeleteFiles.Size = new System.Drawing.Size(102, 17);
-            this.cbFolderDeleteFiles.TabIndex = 1;
-            this.cbFolderDeleteFiles.Text = "Delete files after";
-            this.cbFolderDeleteFiles.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.cbFolderDeleteFiles.UseVisualStyleBackColor = true;
+            this.btnGenerateOpenSSL.Location = new System.Drawing.Point(385, 50);
+            this.btnGenerateOpenSSL.Name = "btnGenerateOpenSSL";
+            this.btnGenerateOpenSSL.Size = new System.Drawing.Size(185, 23);
+            this.btnGenerateOpenSSL.TabIndex = 1;
+            this.btnGenerateOpenSSL.Text = "Not implemented yet";
+            this.btnGenerateOpenSSL.UseVisualStyleBackColor = true;
             // 
-            // cbXmlPkvDeleteFiles
+            // tbGenerateOpenSSLCommandText
             // 
-            this.cbXmlPkvDeleteFiles.AutoSize = true;
-            this.cbXmlPkvDeleteFiles.Checked = true;
-            this.cbXmlPkvDeleteFiles.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cbXmlPkvDeleteFiles.Location = new System.Drawing.Point(361, 44);
-            this.cbXmlPkvDeleteFiles.Name = "cbXmlPkvDeleteFiles";
-            this.cbXmlPkvDeleteFiles.Size = new System.Drawing.Size(102, 17);
-            this.cbXmlPkvDeleteFiles.TabIndex = 4;
-            this.cbXmlPkvDeleteFiles.Text = "Delete files after";
-            this.cbXmlPkvDeleteFiles.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.cbXmlPkvDeleteFiles.UseVisualStyleBackColor = true;
+            this.tbGenerateOpenSSLCommandText.Location = new System.Drawing.Point(14, 24);
+            this.tbGenerateOpenSSLCommandText.Name = "tbGenerateOpenSSLCommandText";
+            this.tbGenerateOpenSSLCommandText.Size = new System.Drawing.Size(555, 20);
+            this.tbGenerateOpenSSLCommandText.TabIndex = 0;
+            this.tbGenerateOpenSSLCommandText.Text = "OPENSSL.EXE GENRSA -OUT \"%OutputFilename%\" 1024";
+            // 
+            // groupAllControls
+            // 
+            this.groupAllControls.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupAllControls.Controls.Add(this.groupGenerate);
+            this.groupAllControls.Controls.Add(this.groupExtract);
+            this.groupAllControls.Location = new System.Drawing.Point(12, 11);
+            this.groupAllControls.Margin = new System.Windows.Forms.Padding(0);
+            this.groupAllControls.Name = "groupAllControls";
+            this.groupAllControls.Size = new System.Drawing.Size(610, 370);
+            this.groupAllControls.TabIndex = 7;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(634, 336);
-            this.Controls.Add(this.groupControls);
-            this.MinimumSize = new System.Drawing.Size(650, 365);
+            this.ClientSize = new System.Drawing.Size(634, 396);
+            this.Controls.Add(this.groupAllControls);
+            this.Controls.Add(this.panelCancel);
+            this.MinimumSize = new System.Drawing.Size(650, 434);
             this.Name = "MainForm";
-            this.Text = "Factoring RSA keys through generation";
-            this.groupControls.ResumeLayout(false);
-            this.groupBoxXml.ResumeLayout(false);
-            this.groupBoxXml.PerformLayout();
-            this.groupBoxStore.ResumeLayout(false);
-            this.groupBoxStore.PerformLayout();
-            this.panelStoreCombo.ResumeLayout(false);
-            this.groupBoxGenerate.ResumeLayout(false);
-            this.groupBoxGenerate.PerformLayout();
-            this.groupBoxFolder.ResumeLayout(false);
-            this.groupBoxFolder.PerformLayout();
+            this.Text = "Keygen analysis for bias";
+            this.groupExtract.ResumeLayout(false);
+            this.groupExtractFromFiles.ResumeLayout(false);
+            this.groupExtractFromFiles.PerformLayout();
+            this.groupExtractFromStore.ResumeLayout(false);
+            this.groupExtractFromStore.PerformLayout();
+            this.panelExtractKeystoreCombo.ResumeLayout(false);
+            this.groupGenerateCryptoAPI.ResumeLayout(false);
+            this.groupGenerateCryptoAPI.PerformLayout();
+            this.panelCancel.ResumeLayout(false);
+            this.groupGenerate.ResumeLayout(false);
+            this.groupGenerateOpenSSL.ResumeLayout(false);
+            this.groupGenerateOpenSSL.PerformLayout();
+            this.groupAllControls.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.GroupBox groupControls;
-        private System.Windows.Forms.GroupBox groupBoxFolder;
-        private System.Windows.Forms.Button btnFolderCertBegin;
-        private System.Windows.Forms.TextBox tbFolderSearchPath;
-        private System.Windows.Forms.Button btnFolderSelect;
-        private System.Windows.Forms.CheckBox cbFolderDeleteFiles;
-        private System.Windows.Forms.GroupBox groupBoxGenerate;
+        private System.Windows.Forms.GroupBox groupExtract;
+        private System.Windows.Forms.Button btnExtractFolderCertBegin;
+        private System.Windows.Forms.CheckBox cbExtractDeleteFiles;
+        private System.Windows.Forms.GroupBox groupGenerateCryptoAPI;
         private System.Windows.Forms.TextBox tbGenerateQuantity;
         private System.Windows.Forms.Button btnGenerateQuantity;
         private System.Windows.Forms.TextBox tbGenerateTimeout;
@@ -449,19 +472,24 @@
         private System.Windows.Forms.TextBox tbGenerateKeysize;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.CheckBox cbGenerateOnlyPrimes;
-        private System.Windows.Forms.GroupBox groupBoxStore;
-        private System.Windows.Forms.Panel panelStoreCombo;
-        private System.Windows.Forms.CheckBox cbStoreAll;
-        private System.Windows.Forms.Button btnStoreExtract;
-        private System.Windows.Forms.ComboBox comboStoreName;
-        private System.Windows.Forms.ComboBox comboStoreLocation;
-        private System.Windows.Forms.GroupBox groupBoxXml;
-        private System.Windows.Forms.RadioButton radioXmlPQ;
-        private System.Windows.Forms.RadioButton radioXmlModulus;
-        private System.Windows.Forms.Button buttonXmlSelectFiles;
-        private System.Windows.Forms.Button buttonPvkSelectFiles;
-        private System.Windows.Forms.CheckBox cbFolderPrivateKeys;
-        private System.Windows.Forms.CheckBox cbXmlPkvDeleteFiles;
+        private System.Windows.Forms.GroupBox groupExtractFromStore;
+        private System.Windows.Forms.Panel panelExtractKeystoreCombo;
+        private System.Windows.Forms.CheckBox cbExtractAllKeystore;
+        private System.Windows.Forms.Button btnExtractKeystore;
+        private System.Windows.Forms.ComboBox comboExtractKeystoreName;
+        private System.Windows.Forms.ComboBox comboExtractKeystoreLocation;
+        private System.Windows.Forms.GroupBox groupExtractFromFiles;
+        private System.Windows.Forms.RadioButton radioExtractPQOnly;
+        private System.Windows.Forms.RadioButton radioExtractWholeKey;
+        private System.Windows.Forms.Button btnExtractXmlSelectFiles;
+        private System.Windows.Forms.Button btnExtractPvkSelectFiles;
+        private System.Windows.Forms.Panel panelCancel;
+        private System.Windows.Forms.Button btnCancel;
+        private System.Windows.Forms.GroupBox groupGenerate;
+        private System.Windows.Forms.GroupBox groupGenerateOpenSSL;
+        private System.Windows.Forms.Button btnGenerateOpenSSL;
+        private System.Windows.Forms.TextBox tbGenerateOpenSSLCommandText;
+        private System.Windows.Forms.Panel groupAllControls;
     }
 }
 

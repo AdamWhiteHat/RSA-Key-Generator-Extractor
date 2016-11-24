@@ -1,15 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+using System.Data;
+using System.Drawing;
 using System.Xml.Linq;
+using System.Threading;
+using System.Windows.Forms;
+using System.ComponentModel;
+using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 
 namespace CertificateKeyGenerator
 {
@@ -18,368 +18,333 @@ namespace CertificateKeyGenerator
         public int KeySize { get { return int.Parse(tbGenerateKeysize.Text); } }
         public int Timeout { get { return int.Parse(tbGenerateTimeout.Text); } }
         public int Quantity { get { return int.Parse(tbGenerateQuantity.Text); } }
-        public string SearchDirectory { get { return tbFolderSearchPath.Text; } private set { tbFolderSearchPath.Text = value; } }
-        public bool DeleteFiles { get { return cbFolderDeleteFiles.Checked; } private set { cbFolderDeleteFiles.Checked = value; } }
-        public bool PrivateKeys { get { return cbFolderPrivateKeys.Checked; } private set { cbFolderPrivateKeys.Checked = value; } }
+        //public bool DeleteFiles { get { return cbFolderDeleteFiles.Checked; } private set { cbFolderDeleteFiles.Checked = value; } }
+        //public bool PrivateKeys { get { return radioPQOnly.Checked; } private set { radioPQOnly.Checked = value; } }
 
-        private int fileCounter;
-        private string rootKeysElement = "Keys";
-        private AsyncBackgroundTask backgroundTask;
-        private CertificateFileCollection certificates;
+        private CancellationTokenSource cancleSource;
+
+        private AsyncBackgroundTask cerBackgroundTask;
+        private AsyncBackgroundTask pvkBackgroundTask;
+        private AsyncBackgroundTask xmlBackgroundTask;
+        private AsyncBackgroundTask cryptoApiBackgroundTask;
+        private AsyncBackgroundTask keystoreBackgroundTask;
         private string lastDirectory;
 
+        private static string modulusElementName = "Modulus";
+
         private static string DefaultDirectory = @"C:\Maths\My Applications\FactorByGenerating";
-        private static string DefaultFileName = "PrivateKeys.{0}.Output.txt";
 
         public MainForm()
         {
             InitializeComponent();
 
-            fileCounter = 0;
-            cbStoreAll.Checked = true;
-            cbStoreAll.Enabled = false;
-            btnFolderCertBegin.Enabled = false;
-            radioXmlModulus.Checked = true;
-            //cbDeleteFiles.Checked = true;
+            cancleSource = new CancellationTokenSource();
+
+            cbExtractAllKeystore.Checked = true;
+            cbExtractAllKeystore.Enabled = false;
+
             lastDirectory = DefaultDirectory;
-            backgroundTask = new AsyncBackgroundTask();
+
+            panelCancel.BackColor = Color.FromArgb(120, Color.FromKnownColor(KnownColor.Control));
+            panelCancel.Visible = false;
+
+            pvkBackgroundTask = new AsyncBackgroundTask();
+            xmlBackgroundTask = new AsyncBackgroundTask();
+            cerBackgroundTask = new AsyncBackgroundTask();
+            keystoreBackgroundTask = new AsyncBackgroundTask();
+            cryptoApiBackgroundTask = new AsyncBackgroundTask();
         }
 
         #region Winforms Events
 
-        private void buttonPvkSelectFiles_Click(object sender, EventArgs e)
+        private void btnExtractPvkSelectFiles_Click(object sender, EventArgs e)
         {
-            string directory = BrowseDialog();
-            if (directory == null)
+            if (!pvkBackgroundTask.IsBusy)
             {
-                return;
+                string directory = FileDialogs.BrowseDialog();
+                if (directory == null)
+                {
+                    return;
+                }
+
+                string outFile = FileDialogs.SaveDialog();
+                if (outFile == null)
+                {
+                    return;
+                }
+
+                bool delFiles = cbExtractDeleteFiles.Checked;
+
+                pvkBackgroundTask = new AsyncBackgroundTask();
+                pvkBackgroundTask.RunWorkerCompleted += new RunWorkerCompletedEventHandler((a, b) => { EnableControl(groupAllControls, true); });
+
+                pvkBackgroundTask.DoWork += new DoWorkEventHandler((sndr, args) =>
+                {
+                    PvkTaskMethod(cancleSource.Token, directory, outFile, delFiles);
+                });
+                pvkBackgroundTask.RunWorkerAsync();
             }
-
-            string outFile = SaveDialog();
-            if (outFile == null)
-            {
-                return;
-            }
-
-            // Disable UI
-            groupControls.Enabled = false;
-
-            PvkFileExtractor pvkFile = new PvkFileExtractor(directory, outFile, cbXmlPkvDeleteFiles.Checked);
-            pvkFile.Begin();
-
-
-            // Enable the UI again
-            groupControls.Enabled = true;
         }
 
-        private void buttonXmlSelectFiles_Click(object sender, EventArgs e)
+        private void btnExtractXmlSelectFiles_Click(object sender, EventArgs e)
         {
-            string inFile = OpenDialog();
-            if (inFile == null)
+            if (!xmlBackgroundTask.IsBusy)
             {
-                return;
+                string inFile = FileDialogs.OpenDialog();
+                if (inFile == null)
+                {
+                    return;
+                }
+
+                string outFile = FileDialogs.SaveDialog();
+                if (outFile == null)
+                {
+                    return;
+                }
+
+                bool privKeys = false;
+                if (radioExtractPQOnly.Checked)
+                {
+                    privKeys = radioExtractPQOnly.Checked;
+                }
+
+                xmlBackgroundTask = new AsyncBackgroundTask();
+                xmlBackgroundTask.RunWorkerCompleted += new RunWorkerCompletedEventHandler((a, b) => { EnableControl(groupAllControls, true); });
+                xmlBackgroundTask.DoWork += new DoWorkEventHandler((sndr, args) =>
+                {
+                    XmlTaskMethod(cancleSource.Token, inFile, outFile);
+                });
+                xmlBackgroundTask.RunWorkerAsync();
             }
-
-            string outFile = SaveDialog();
-            if (outFile == null)
-            {
-                return;
-            }
-
-            // Disable UI
-            groupControls.Enabled = false;
-
-            string extractName = "Modulus";
-
-            if (radioXmlPQ.Checked)
-            {
-
-            }
-
-            XDocument document = XDocument.Load(inFile);
-            XElement rootElement = document.Element(rootKeysElement);
-            IEnumerable<XElement> inElements = rootElement.Elements();
-
-            List<XElement> outElements = new List<XElement>();
-            foreach (XElement element in inElements)
-            {
-                outElements.Add(element.Element(extractName));
-            }
-
-            File.WriteAllLines(outFile, outElements.Select(el => el.Value));
-
-            // Enable the UI again
-            groupControls.Enabled = true;
         }
 
-        private void cbStoreAll_CheckedChanged(object sender, EventArgs e)
+        private void cbExtractAllKeystore_CheckedChanged(object sender, EventArgs e)
         {
-            if (cbStoreAll.Checked)
+            if (cbExtractAllKeystore.Checked)
             {
-                panelStoreCombo.Enabled = false;
+                panelExtractKeystoreCombo.Enabled = false;
             }
             else
             {
-                panelStoreCombo.Enabled = true;
+                panelExtractKeystoreCombo.Enabled = true;
             }
         }
 
-        private void btnSelectFolder_Click(object sender, EventArgs e)
+        private void btnExtractFolderCertBegin_Click(object sender, EventArgs e)
         {
-            string directory = BrowseDialog();
-            if (directory == null)
+            if (!cerBackgroundTask.IsBusy)
             {
-                return;
+                string directory = FileDialogs.BrowseDialog();
+                if (directory == null)
+                {
+                    return;
+                }
+
+                string filename = FileDialogs.SaveDialog();
+                if (filename == null)
+                {
+                    return;
+                }
+
+                bool privKeys = radioExtractPQOnly.Checked;
+                bool deleteFiles = cbExtractDeleteFiles.Checked;
+
+                cerBackgroundTask = new AsyncBackgroundTask();
+                cerBackgroundTask.RunWorkerCompleted += new RunWorkerCompletedEventHandler((a, b) => { EnableControl(groupAllControls, true); });
+                cerBackgroundTask.DoWork += new DoWorkEventHandler((sndr, args) =>
+                {
+                    CerTaskMethod(directory, filename, privKeys, deleteFiles);
+                });
+                cerBackgroundTask.RunWorkerAsync();
             }
-
-            SearchDirectory = directory;
-
-            btnFolderCertBegin.Enabled = true;
         }
 
-        private void btnFolderCertBegin_Click(object sender, EventArgs e)
-        {
-            string filename = SaveDialog();
-            if (filename == null)
-            {
-                return;
-            }
-
-            // Disable UI
-            groupControls.Enabled = false;
-
-            certificates = new CertificateFileCollection(SearchDirectory, PrivateKeys);
-            if (certificates == null)
-            {
-                return;
-            }
-
-            btnFolderCertBegin.Enabled = false;
-            btnFolderSelect.Enabled = false;
-            backgroundTask.DoWork += TaskWork;
-            backgroundTask.RunWorkerCompleted += TaskCleanup;
-            backgroundTask.RunWorkerAsync(filename);
-
-            // Enable the UI again
-            groupControls.Enabled = true;
-        }
-
-        Timer generateKeysTimer = new Timer();
         private void btnGenerateQuantity_Click(object sender, EventArgs e)
         {
-            string filename = SaveDialog();
-            if (filename == null)
+            if (!cryptoApiBackgroundTask.IsBusy)
             {
-                return;
-            }
-
-            int keySize = KeySize;
-            if (keySize % 8 != 0)
-            {
-                MessageBox.Show("The key size must be a multiple of 8.", "Key size error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            // Disable UI
-            groupControls.Enabled = false;
-            StringBuilder fileBuilder = new StringBuilder();
-            bool onlyPrimes = cbGenerateOnlyPrimes.Checked;
-
-            try
-            {
-                if (!onlyPrimes)
-                {
-                    File.AppendAllText(filename, $"<{rootKeysElement}>");
-                }
-                // Timeout
-                DateTime quitTime = DateTime.Now.Add(TimeSpan.FromSeconds(Timeout));
-
-                int counter = 0;
+                int keySize = KeySize;
                 int quantity = Quantity;
-                int writeSize = 409600;
+                int timeout = Timeout;
+                bool onlyGeneratePQ = cbGenerateOnlyPrimes.Checked;
 
+                cryptoApiBackgroundTask = new AsyncBackgroundTask();
+                cryptoApiBackgroundTask.RunWorkerCompleted += new RunWorkerCompletedEventHandler((a, b) => { EnableControl(groupAllControls, true); });
 
-                while (counter++ < quantity)
+                cryptoApiBackgroundTask.DoWork += new DoWorkEventHandler((sndr, args) =>
                 {
-                    if (DateTime.Now > quitTime)
-                    {
-                        break;
-                    }
-                    fileBuilder.AppendLine(onlyPrimes ? string.Join(Environment.NewLine, PrivateKeySerializer.GetPrivateKeyPQ(keySize)) : PrivateKeySerializer.GetPrivateKeyPair(keySize));
-                    if (fileBuilder.Length > writeSize)
-                    {
-                        File.AppendAllText(filename, fileBuilder.ToString());
-                        fileBuilder.Clear();
-                    }
-                }
-            }
-            finally
-            {
-                if (fileBuilder != null && fileBuilder.Length > 0)
-                {
-                    File.AppendAllText(filename, fileBuilder.ToString());
-                }
-
-                if (!onlyPrimes)
-                {
-                    File.AppendAllText(filename, $"</{rootKeysElement}>");
-                }
-
-                // Enable the UI again
-                groupControls.Enabled = true;
+                    GenerateCryptoAPIKeysTask(keySize, quantity, timeout, onlyGeneratePQ);
+                });
+                cryptoApiBackgroundTask.RunWorkerAsync();
             }
         }
 
-        private void btnStoreExtract_Click(object sender, EventArgs e)
+        private void btnExtractKeystore_Click(object sender, EventArgs e)
         {
-            string filename = SaveDialog();
-            if (filename == null)
+            if (!keystoreBackgroundTask.IsBusy)
             {
-                return;
-            }
-
-            List<StoreLocation> ListOfStoreLocation =
-                new List<StoreLocation>()
+                string directory = FileDialogs.BrowseDialog();
+                if (directory == null)
                 {
-                    StoreLocation.CurrentUser,
-                    StoreLocation.LocalMachine
-                };
-
-            List<StoreName> ListOfStoreNames =
-                new List<StoreName>()
-                {
-                    StoreName.Disallowed,
-                    StoreName.AddressBook,
-                    StoreName.AuthRoot,
-                    StoreName.CertificateAuthority,
-                    StoreName.My,
-                    StoreName.Root,
-                    StoreName.TrustedPeople,
-                    StoreName.TrustedPublisher
-                };
-
-            // Disable UI
-            groupControls.Enabled = false;
-
-            List<CertificateFile> certList = new List<CertificateFile>();
-            foreach (StoreLocation location in ListOfStoreLocation)
-            {
-                foreach (StoreName name in ListOfStoreNames)
-                {
-                    X509Store store = new X509Store(name, location);
-                    store.Open(OpenFlags.ReadOnly);
-
-                    foreach (X509Certificate2 cert in store.Certificates)
-                    {
-                        CertificateFile newRow = new CertificateFile(cert);
-                        certList.Add(newRow);
-                    }
-
-                    store.Close();
+                    return;
                 }
+
+                string outFile = FileDialogs.SaveDialog();
+                if (outFile == null)
+                {
+                    return;
+                }
+
+                bool delFiles = cbExtractDeleteFiles.Checked;
+
+                keystoreBackgroundTask = new AsyncBackgroundTask();
+                keystoreBackgroundTask.RunWorkerCompleted += new RunWorkerCompletedEventHandler((a, b) => { EnableControl(groupAllControls, true); });
+
+                keystoreBackgroundTask.DoWork += new DoWorkEventHandler((sndr, args) =>
+                {
+                    ExtractKeystoreTask();
+                });
+                keystoreBackgroundTask.RunWorkerAsync();
             }
+        }
 
-            CertificateFileCollection storeCollection = new CertificateFileCollection(certList);
-
-            List<string> keys = storeCollection.GetPublicKeys();
-
-            File.AppendAllLines(filename, keys);
-
-            // Enable the UI again
-            groupControls.Enabled = true;
+        private void tbCancel_Click(object sender, EventArgs e)
+        {
+            Cancel();
         }
 
         #endregion
 
         #region Task Methods
 
-        private void TaskWork(object s, DoWorkEventArgs e)
+        private void GenerateCryptoAPIKeysTask(int keySize, int quantity, int timeout, bool onlyExtractPQ)
         {
-            string outputFilename = (string)e.Argument;
-            List<string> keys = certificates.GetKeys();
-            File.WriteAllLines(outputFilename, keys);
-
-            if (File.Exists(outputFilename))
-            {
-                if (cbFolderDeleteFiles.Checked)
-                {
-                    certificates.RemoveAllFiles();
-                }
-                e.Result = true;
-            }
-            else
-            {
-                e.Result = false;
-            }
+            EnableControl(groupAllControls, false);
+            GenerateKeys.CryptoAPI(keySize, quantity, timeout, onlyExtractPQ);
         }
 
-        private void TaskCleanup(object s, RunWorkerCompletedEventArgs e)
+        private void ExtractKeystoreTask()
         {
-            btnFolderSelect.Enabled = true;
-            tbFolderSearchPath.Text = string.Empty;
+            EnableControl(groupAllControls, false);
+            ExtractKeystore.Extract();
+        }
 
-            if (e.Error != null)
+        private void PvkTaskMethod(CancellationToken cancelToken, string directory, string outFile, bool delFiles)
+        {
+            EnableControl(groupAllControls, false);
+            ExtractPvkFile pvkFile = new ExtractPvkFile(directory, outFile, delFiles);
+            pvkFile.Begin();
+            pvkFile = null;
+        }
+
+        private void XmlTaskMethod(CancellationToken cancelToken, string inFile, string outFile)
+        {
+            EnableControl(groupAllControls, false);
+            XDocument document = XDocument.Load(inFile);
+            XElement rootElement = document.Element(GenerateKeys.ElementKeys);
+            List<XElement> inElements = rootElement.Elements().ToList();
+
+            List<XElement> outElements = new List<XElement>();
+            foreach (XElement element in inElements)
             {
-                MessageBox.Show(e.Error.ToString(), "Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                outElements.Add(element.Element(modulusElementName));
             }
-            else
+
+            inElements.Clear();
+            rootElement = null;
+            document = null;
+
+            File.WriteAllLines(outFile, outElements.Select(el => el.Value));
+            outElements.Clear();
+        }
+
+        private void CerTaskMethod(string searchDir, string saveFilename, bool privKeys, bool deleteFiles)
+        {
+            EnableControl(groupAllControls, false);
+            panelCancel.Visible = true;
+            panelCancel.BringToFront();
+            CertificateFileCollection certificates = new CertificateFileCollection(searchDir, privKeys, deleteFiles);
+            if (certificates != null)
             {
-                bool success = (bool)e.Result;
-                if (!success)
-                {
-                    MessageBox.Show("BackgroundWorker returned a result of unsuccessful.\nNo exception was thrown.");
-                }
+                File.WriteAllLines(saveFilename, certificates.GetKeys());
+                certificates = null;
             }
         }
 
         #endregion
 
-        public string BrowseDialog()
+        #region Helper Methods
+
+        private void EnableControl(Control control, bool enable)
         {
-            using (FolderBrowserDialog browseForFolder = new FolderBrowserDialog())
+            if (control.InvokeRequired)
             {
-                browseForFolder.Description = "Select search folder";
-                browseForFolder.RootFolder = Environment.SpecialFolder.MyComputer;
-                browseForFolder.SelectedPath = lastDirectory;
-                if (browseForFolder.ShowDialog() == DialogResult.OK)
-                {
-                    lastDirectory = browseForFolder.SelectedPath;
-                    return browseForFolder.SelectedPath;
-                }
+                control.Invoke(new MethodInvoker(() => { EnableControl(control, enable); }));
             }
-            return null;
+            else
+            {
+                control.Enabled = enable;
+                if (!enable)
+                {
+                    ShowCancelPanel();
+                }
+                else
+                {
+                    Cancel();
+                }
+
+            }
         }
 
-        public string SaveDialog()
+        private void ShowCancelPanel()
         {
-            using (SaveFileDialog saveDialog = new SaveFileDialog())
+            if (panelCancel.InvokeRequired)
             {
-                saveDialog.Title = "Select output file";
-                saveDialog.OverwritePrompt = false;               
-                saveDialog.InitialDirectory = lastDirectory;                
-                saveDialog.FileName = string.Format(DefaultFileName, fileCounter++);                
-                if (saveDialog.ShowDialog() == DialogResult.OK)
+                panelCancel.Invoke(new MethodInvoker(() => ShowCancelPanel()));
+            }
+            else
+            {
+                if (!panelCancel.Visible)
                 {
-                    lastDirectory = Path.GetDirectoryName(saveDialog.FileName);
-                    return saveDialog.FileName;
+                    panelCancel.Visible = true;
+                    groupAllControls.Enabled = false;
+                    panelCancel.BringToFront();
                 }
             }
-            return null;
         }
 
-        public string OpenDialog()
+        private void Cancel()
         {
-            using (OpenFileDialog openDialog = new OpenFileDialog())
+            if (panelCancel.InvokeRequired)
             {
-                openDialog.Title = "Select file to open";
-                openDialog.InitialDirectory = lastDirectory;
-                if (openDialog.ShowDialog() == DialogResult.OK)
+                panelCancel.Invoke(new MethodInvoker(() => Cancel()));
+            }
+            else
+            {
+                if (cerBackgroundTask.IsBusy)
                 {
-                    lastDirectory = Path.GetDirectoryName(openDialog.FileName);
-                    return openDialog.FileName;
+                    cerBackgroundTask.CancelAsync();
+                }
+                else if (xmlBackgroundTask.IsBusy)
+                {
+                    xmlBackgroundTask.CancelAsync();
+                }
+                else if (pvkBackgroundTask.IsBusy)
+                {
+                    pvkBackgroundTask.CancelAsync();
+                }
+
+                if (panelCancel.Visible)
+                {
+                    panelCancel.Visible = false;
+                    groupAllControls.Enabled = true;
+                    groupAllControls.BringToFront();
                 }
             }
-            return null;
         }
+
+
+        #endregion
+
     }
 }

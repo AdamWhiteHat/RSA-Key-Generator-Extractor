@@ -16,15 +16,17 @@ namespace CertificateKeyGenerator
 
         public static string GetPrivateKeyPair(int keySize)
         {
-            using (RSACryptoServiceProvider rsaCsp = new RSACryptoServiceProvider(keySize, cspParams) { PersistKeyInCsp = false })
+            using (RSACryptoServiceProvider rsaCsp = new RSACryptoServiceProvider(keySize, cspParams))
             {
+                rsaCsp.PersistKeyInCsp = false;
                 return ToXMLDocument(rsaCsp.ExportParameters(true));
             }
         }
         public static string[] GetPrivateKeyPQ(int keySize)
         {
-            using (RSACryptoServiceProvider rsaCsp = new RSACryptoServiceProvider(keySize, cspParams) { PersistKeyInCsp = false })
+            using (RSACryptoServiceProvider rsaCsp = new RSACryptoServiceProvider(keySize, cspParams))
             {
+                rsaCsp.PersistKeyInCsp = false;
                 return ExtractPQ(rsaCsp.ExportParameters(true));
             }
         }
