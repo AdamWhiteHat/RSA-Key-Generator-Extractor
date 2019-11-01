@@ -76,7 +76,12 @@ namespace CertificateKeyGenerator
                 bool delFiles = cbExtractDeleteFiles.Checked;
 
                 pvkBackgroundTask = new AsyncBackgroundTask();
-                pvkBackgroundTask.RunWorkerCompleted += new RunWorkerCompletedEventHandler((a, b) => { EnableControl(groupAllControls, true); });
+                pvkBackgroundTask.RunWorkerCompleted += new RunWorkerCompletedEventHandler(
+                (a, b) =>
+                    {
+                        pvkBackgroundTask.SetWorkerStatus(false);
+                        EnableControl(groupAllControls, true);
+                    });
 
                 pvkBackgroundTask.DoWork += new DoWorkEventHandler((sndr, args) =>
                 {
@@ -109,7 +114,13 @@ namespace CertificateKeyGenerator
                 }
 
                 xmlBackgroundTask = new AsyncBackgroundTask();
-                xmlBackgroundTask.RunWorkerCompleted += new RunWorkerCompletedEventHandler((a, b) => { EnableControl(groupAllControls, true); });
+                xmlBackgroundTask.RunWorkerCompleted += new RunWorkerCompletedEventHandler(
+                (a, b) =>
+                    {
+                        EnableControl(groupAllControls, true);
+                        xmlBackgroundTask.SetWorkerStatus(false);
+                    });
+
                 xmlBackgroundTask.DoWork += new DoWorkEventHandler((sndr, args) =>
                 {
                     XmlTaskMethod(cancleSource.Token, inFile, outFile);
@@ -150,7 +161,13 @@ namespace CertificateKeyGenerator
                 bool deleteFiles = cbExtractDeleteFiles.Checked;
 
                 cerBackgroundTask = new AsyncBackgroundTask();
-                cerBackgroundTask.RunWorkerCompleted += new RunWorkerCompletedEventHandler((a, b) => { EnableControl(groupAllControls, true); });
+                cerBackgroundTask.RunWorkerCompleted += new RunWorkerCompletedEventHandler(
+                (a, b) =>
+                    {
+                        EnableControl(groupAllControls, true);
+                        cerBackgroundTask.SetWorkerStatus(false);
+                    });
+
                 cerBackgroundTask.DoWork += new DoWorkEventHandler((sndr, args) =>
                 {
                     CerTaskMethod(directory, filename, privKeys, deleteFiles);
@@ -169,7 +186,12 @@ namespace CertificateKeyGenerator
                 bool onlyGeneratePQ = cbGenerateOnlyPrimes.Checked;
 
                 cryptoApiBackgroundTask = new AsyncBackgroundTask();
-                cryptoApiBackgroundTask.RunWorkerCompleted += new RunWorkerCompletedEventHandler((a, b) => { EnableControl(groupAllControls, true); });
+                cryptoApiBackgroundTask.RunWorkerCompleted += new RunWorkerCompletedEventHandler(
+                (a, b) =>
+                    {
+                        EnableControl(groupAllControls, true);
+                        cryptoApiBackgroundTask.SetWorkerStatus(false);
+                    });
 
                 cryptoApiBackgroundTask.DoWork += new DoWorkEventHandler((sndr, args) =>
                 {

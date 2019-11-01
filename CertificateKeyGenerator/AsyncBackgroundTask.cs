@@ -111,6 +111,11 @@ namespace CertificateKeyGenerator
             }
         }
 
+        public void SetWorkerStatus(bool isBusy)
+        {
+            IsBusy = isBusy;
+        }
+
         #endregion
 
         #region Private Members

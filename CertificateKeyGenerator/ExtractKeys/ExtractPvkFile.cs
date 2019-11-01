@@ -19,8 +19,8 @@ namespace CertificateKeyGenerator
         private CancellationToken cancel;
 
         private static string SearchExtension = "*.pvk";
-        private static string Header = "-----BEGIN RSA PRIVATE KEY-----";
-        private static string Footer = "-----END RSA PRIVATE KEY-----";
+        private static string[] Header = new string[] { "-----BEGIN RSA PRIVATE KEY-----", "-----BEGIN PRIVATE KEY-----", "-----", "PRIVATE KEY", "BEGIN ", "END ", "RSA ", "-" };
+        private static string[] Footer = new string[] { "-----END RSA PRIVATE KEY-----", "-----END PRIVATE KEY-----" };
 
         public ExtractPvkFile(CancellationToken cancelToken, string searchDirectory, string outFile, bool deleteFilesAfter)
             : this(searchDirectory, outFile, deleteFilesAfter)
@@ -59,7 +59,7 @@ namespace CertificateKeyGenerator
             StringBuilder output = new StringBuilder();
 
             var pathBatch = FilePaths.Take(batchSize);
-            
+
             while (pathBatch.Any() && !cancel.IsCancellationRequested)
             {
                 foreach (string file in pathBatch)
@@ -72,9 +72,10 @@ namespace CertificateKeyGenerator
 
                     using (ans1Key = new ANS1PrivateKey(bytes))
                     {
+                        ans1Key.ParseBuffer();
                         output.AppendLine(ans1Key.P.ToString());
                         output.AppendLine(ans1Key.Q.ToString());
-                                                
+
                         counter++;
                         DeleteFile(file);
                     }
@@ -103,11 +104,16 @@ namespace CertificateKeyGenerator
                 return null;
             }
 
-            fileText = fileText
-                .Replace(ExtractPvkFile.Header, "")
-                .Replace(ExtractPvkFile.Footer, "")
-                .Replace("\r", "")
-                .Replace("\n", "");
+            // Remove file headers, footers, and stuff that is not part of the base64 encoded data
+            foreach (string str in ExtractPvkFile.Header)
+            {
+                fileText = fileText.Replace(str, "");
+            }
+            foreach (string str in ExtractPvkFile.Footer)
+            {
+                fileText = fileText.Replace(str, "");
+            }
+            fileText = fileText.Replace("\t", "").Replace("\r", "").Replace("\n", "");
 
             byte[] result = Convert.FromBase64String(fileText);
             fileText = null;

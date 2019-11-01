@@ -124,8 +124,6 @@
             // cbExtractDeleteFiles
             // 
             this.cbExtractDeleteFiles.AutoSize = true;
-            this.cbExtractDeleteFiles.Checked = true;
-            this.cbExtractDeleteFiles.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cbExtractDeleteFiles.Location = new System.Drawing.Point(270, 44);
             this.cbExtractDeleteFiles.Name = "cbExtractDeleteFiles";
             this.cbExtractDeleteFiles.Size = new System.Drawing.Size(151, 17);

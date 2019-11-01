@@ -28,13 +28,12 @@ namespace CertificateKeyGenerator
         {
             byteCount = bytes.Length;
             byteBuffer = bytes.ToList();
-            ParseBuffer();
         }
 
         public void Dispose()
         {
             byteCount = -1;
-            byteBuffer = null;            
+            byteBuffer = null;
             Modulus = Exponent = D = P = Q = DP = DQ = QInverse = BigInteger.MinusOne;
         }
 
@@ -144,7 +143,7 @@ namespace CertificateKeyGenerator
             return variableValue;
         }
 
-        private void ParseBuffer()
+        public void ParseBuffer()
         {
             AssertNextValueIs(SequenceTag);
 
@@ -156,7 +155,6 @@ namespace CertificateKeyGenerator
             {
                 ThrowFormatException(bodyLength, bufferLen);
             }
-
 
             AssertNextValueIs(IntTag);
             AssertNextValueIs(0x01);
