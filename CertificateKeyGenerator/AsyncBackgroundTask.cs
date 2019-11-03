@@ -73,6 +73,7 @@ namespace CertificateKeyGenerator
             {
                 IsBusy = true;
                 this.DoWork += BeginDoWork;
+                this.RunWorkerCompleted += BeginWorkerCompleted;
                 _backgroundWorker.RunWorkerAsync(argument);
                 return true;
             }

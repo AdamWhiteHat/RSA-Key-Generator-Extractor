@@ -48,7 +48,7 @@ namespace CertificateKeyGenerator
                     {
                         break;
                     }
-                    fileBuilder.AppendLine(onlyPrimes ? string.Join(Environment.NewLine, PrivateKeySerializer.GetPrivateKeyPQ(keySize)) : PrivateKeySerializer.GetPrivateKeyPair(keySize));
+                    fileBuilder.AppendLine(onlyPrimes ? string.Join(Environment.NewLine, PrivateKeySerializer.GetPrivateKeyPQ(keySize)) : PrivateKeySerializer.GetPrivateKey(keySize));
                     if (fileBuilder.Length > writeSize)
                     {
                         File.AppendAllText(filename, fileBuilder.ToString());

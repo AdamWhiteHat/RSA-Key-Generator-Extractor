@@ -1,5 +1,9 @@
-﻿using System.Security.Cryptography;
+﻿using System;
+using System.Linq;
 using System.Text;
+using System.Collections;
+using System.Collections.Generic;
+using System.Security.Cryptography;
 
 namespace CertificateKeyGenerator
 {
@@ -10,11 +14,11 @@ namespace CertificateKeyGenerator
         static PrivateKeySerializer()
         {
             CspParameters csp = new CspParameters();
-            csp.Flags = CspProviderFlags.UseArchivableKey | CspProviderFlags.NoPrompt | CspProviderFlags.UseArchivableKey;
+            csp.Flags = CspProviderFlags.UseArchivableKey | CspProviderFlags.NoPrompt | CspProviderFlags.CreateEphemeralKey;
             cspParams = csp;
         }
 
-        public static string GetPrivateKeyPair(int keySize)
+        public static string GetPrivateKey(int keySize)
         {
             using (RSACryptoServiceProvider rsaCsp = new RSACryptoServiceProvider(keySize, cspParams))
             {
@@ -22,6 +26,7 @@ namespace CertificateKeyGenerator
                 return ToXMLDocument(rsaCsp.ExportParameters(true));
             }
         }
+
         public static string[] GetPrivateKeyPQ(int keySize)
         {
             using (RSACryptoServiceProvider rsaCsp = new RSACryptoServiceProvider(keySize, cspParams))
@@ -40,22 +45,71 @@ namespace CertificateKeyGenerator
             };
         }
 
-        private static string ToXMLDocument(RSAParameters key)
+        public static RSAParameters ToRSAParameters(ANS1PrivateKey key)
         {
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine($"<RSAKeyValue>");
-            sb.AppendLine($"  <Modulus>{EncodingUtility.CalculateValue(key.Modulus)}</Modulus>");
-            sb.AppendLine($"  <Exponent>{EncodingUtility.CalculateValue(key.Exponent)}</Exponent>");
-            sb.AppendLine($"  <P>{EncodingUtility.CalculateValue(key.P)}</P>");
-            sb.AppendLine($"  <Q>{EncodingUtility.CalculateValue(key.Q)}</Q>");
-            sb.AppendLine($"  <DP>{EncodingUtility.CalculateValue(key.DP)}</DP>");
-            sb.AppendLine($"  <DQ>{EncodingUtility.CalculateValue(key.DQ)}</DQ>");
-            sb.AppendLine($"  <InverseQ>{EncodingUtility.CalculateValue(key.InverseQ)}</InverseQ>");
-            sb.AppendLine($"  <D>{EncodingUtility.CalculateValue(key.D)}</D>");
-            sb.AppendLine($"</RSAKeyValue>");
-            return sb.ToString();
+            RSAParameters result = new RSAParameters();
+            result.Modulus = EncodingUtility.AsBytes(key.Modulus);
+            result.Exponent = EncodingUtility.AsBytes(key.Exponent);
+            result.P = EncodingUtility.AsBytes(key.P);
+            result.Q = EncodingUtility.AsBytes(key.Q);
+            result.DP = EncodingUtility.AsBytes(key.DP);
+            result.DQ = EncodingUtility.AsBytes(key.DQ);
+            result.D = EncodingUtility.AsBytes(key.D);
+            result.InverseQ = EncodingUtility.AsBytes(key.InverseQ);
+            return result;
+        }
+
+        public static string ToXMLDocument(RSAParameters key)
+        {
+            StringBuilder result = new StringBuilder();
+            WriteXMLDocument(result, key);
+            return result.ToString();
+        }
+
+        public static string ToXMLDocument(ANS1PrivateKey key)
+        {
+            StringBuilder result = new StringBuilder();
+            WriteXMLDocument(result, key);
+            return result.ToString();
+        }
+
+        public static void WritePQDocument(StringBuilder stringBuilder, ANS1PrivateKey key)
+        {
+            stringBuilder.AppendLine($"<RSAKeyValue>");
+            stringBuilder.AppendLine($"  <P>{key.P}</P>");
+            stringBuilder.AppendLine($"  <Q>{key.Q}</Q>");
+            stringBuilder.AppendLine($"</RSAKeyValue>");
+            stringBuilder.Append(Environment.NewLine);
+        }
+
+        public static void WriteXMLDocument(StringBuilder stringBuilder, RSAParameters key)
+        {
+            stringBuilder.AppendLine($"<RSAKeyValue>");
+            stringBuilder.AppendLine($"  <Modulus>{EncodingUtility.CalculateValue(key.Modulus)}</Modulus>");
+            stringBuilder.AppendLine($"  <Exponent>{EncodingUtility.CalculateValue(key.Exponent)}</Exponent>");
+            stringBuilder.AppendLine($"  <P>{EncodingUtility.CalculateValue(key.P)}</P>");
+            stringBuilder.AppendLine($"  <Q>{EncodingUtility.CalculateValue(key.Q)}</Q>");
+            stringBuilder.AppendLine($"  <DP>{EncodingUtility.CalculateValue(key.DP)}</DP>");
+            stringBuilder.AppendLine($"  <DQ>{EncodingUtility.CalculateValue(key.DQ)}</DQ>");
+            stringBuilder.AppendLine($"  <InverseQ>{EncodingUtility.CalculateValue(key.InverseQ)}</InverseQ>");
+            stringBuilder.AppendLine($"  <D>{EncodingUtility.CalculateValue(key.D)}</D>");
+            stringBuilder.AppendLine($"</RSAKeyValue>");
+            stringBuilder.Append(Environment.NewLine);
+        }
+
+        public static void WriteXMLDocument(StringBuilder stringBuilder, ANS1PrivateKey key)
+        {
+            stringBuilder.AppendLine($"<RSAKeyValue>");
+            stringBuilder.AppendLine($"  <Modulus>{key.Modulus}</Modulus>");
+            stringBuilder.AppendLine($"  <Exponent>{key.Exponent}</Exponent>");
+            stringBuilder.AppendLine($"  <P>{key.P}</P>");
+            stringBuilder.AppendLine($"  <Q>{key.Q}</Q>");
+            stringBuilder.AppendLine($"  <DP>{key.DP}</DP>");
+            stringBuilder.AppendLine($"  <DQ>{key.DQ}</DQ>");
+            stringBuilder.AppendLine($"  <InverseQ>{key.InverseQ}</InverseQ>");
+            stringBuilder.AppendLine($"  <D>{key.D}</D>");
+            stringBuilder.AppendLine($"</RSAKeyValue>");
+            stringBuilder.Append(Environment.NewLine);
         }
     }
-
-
 }

@@ -31,7 +31,6 @@ namespace CertificateKeyGenerator
         private string lastDirectory;
 
         private static string modulusElementName = "Modulus";
-
         private static string DefaultDirectory = @"C:\Maths\My Applications\FactorByGenerating";
 
         public MainForm()
@@ -74,18 +73,19 @@ namespace CertificateKeyGenerator
                 }
 
                 bool delFiles = cbExtractDeleteFiles.Checked;
+                bool exportOnlyPQ = cbExportOnlyPQ.Checked;
 
                 pvkBackgroundTask = new AsyncBackgroundTask();
                 pvkBackgroundTask.RunWorkerCompleted += new RunWorkerCompletedEventHandler(
                 (a, b) =>
-                    {
-                        pvkBackgroundTask.SetWorkerStatus(false);
-                        EnableControl(groupAllControls, true);
-                    });
+                {
+                    pvkBackgroundTask.SetWorkerStatus(false);
+                    EnableControl(groupAllControls, true);
+                });
 
                 pvkBackgroundTask.DoWork += new DoWorkEventHandler((sndr, args) =>
                 {
-                    PvkTaskMethod(cancleSource.Token, directory, outFile, delFiles);
+                    PvkTaskMethod(cancleSource.Token, directory, outFile, delFiles, exportOnlyPQ);
                 });
                 pvkBackgroundTask.RunWorkerAsync();
             }
@@ -107,18 +107,18 @@ namespace CertificateKeyGenerator
                     return;
                 }
 
-                bool privKeys = false;
-                if (radioExtractPQOnly.Checked)
-                {
-                    privKeys = radioExtractPQOnly.Checked;
-                }
+                //bool privKeys = false;
+                //if (radioExtractPQOnly.Checked)
+                //{
+                //    privKeys = radioExtractPQOnly.Checked;
+                //}
 
                 xmlBackgroundTask = new AsyncBackgroundTask();
                 xmlBackgroundTask.RunWorkerCompleted += new RunWorkerCompletedEventHandler(
                 (a, b) =>
                     {
-                        EnableControl(groupAllControls, true);
                         xmlBackgroundTask.SetWorkerStatus(false);
+                        EnableControl(groupAllControls, true);
                     });
 
                 xmlBackgroundTask.DoWork += new DoWorkEventHandler((sndr, args) =>
@@ -157,16 +157,16 @@ namespace CertificateKeyGenerator
                     return;
                 }
 
-                bool privKeys = radioExtractPQOnly.Checked;
+                bool privKeys = cbExportOnlyPQ.Checked;
                 bool deleteFiles = cbExtractDeleteFiles.Checked;
 
                 cerBackgroundTask = new AsyncBackgroundTask();
                 cerBackgroundTask.RunWorkerCompleted += new RunWorkerCompletedEventHandler(
                 (a, b) =>
-                    {
-                        EnableControl(groupAllControls, true);
-                        cerBackgroundTask.SetWorkerStatus(false);
-                    });
+                {
+                    EnableControl(groupAllControls, true);
+                    cerBackgroundTask.SetWorkerStatus(false);
+                });
 
                 cerBackgroundTask.DoWork += new DoWorkEventHandler((sndr, args) =>
                 {
@@ -188,10 +188,10 @@ namespace CertificateKeyGenerator
                 cryptoApiBackgroundTask = new AsyncBackgroundTask();
                 cryptoApiBackgroundTask.RunWorkerCompleted += new RunWorkerCompletedEventHandler(
                 (a, b) =>
-                    {
-                        EnableControl(groupAllControls, true);
-                        cryptoApiBackgroundTask.SetWorkerStatus(false);
-                    });
+                {
+                    EnableControl(groupAllControls, true);
+                    cryptoApiBackgroundTask.SetWorkerStatus(false);
+                });
 
                 cryptoApiBackgroundTask.DoWork += new DoWorkEventHandler((sndr, args) =>
                 {
@@ -220,7 +220,11 @@ namespace CertificateKeyGenerator
                 bool delFiles = cbExtractDeleteFiles.Checked;
 
                 keystoreBackgroundTask = new AsyncBackgroundTask();
-                keystoreBackgroundTask.RunWorkerCompleted += new RunWorkerCompletedEventHandler((a, b) => { EnableControl(groupAllControls, true); });
+                keystoreBackgroundTask.RunWorkerCompleted += new RunWorkerCompletedEventHandler(
+                (a, b) =>
+                {
+                    EnableControl(groupAllControls, true);
+                });
 
                 keystoreBackgroundTask.DoWork += new DoWorkEventHandler((sndr, args) =>
                 {
@@ -251,10 +255,10 @@ namespace CertificateKeyGenerator
             ExtractKeystore.Extract();
         }
 
-        private void PvkTaskMethod(CancellationToken cancelToken, string directory, string outFile, bool delFiles)
+        private void PvkTaskMethod(CancellationToken cancelToken, string directory, string outFile, bool delFiles, bool exportOnlyPQ)
         {
             EnableControl(groupAllControls, false);
-            ExtractPvkFile pvkFile = new ExtractPvkFile(directory, outFile, delFiles);
+            ExtractPvkFile pvkFile = new ExtractPvkFile(cancelToken, directory, outFile, delFiles, exportOnlyPQ);
             pvkFile.Begin();
             pvkFile = null;
         }
@@ -364,7 +368,6 @@ namespace CertificateKeyGenerator
                 }
             }
         }
-
 
         #endregion
 

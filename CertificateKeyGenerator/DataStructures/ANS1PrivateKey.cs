@@ -15,7 +15,7 @@ namespace CertificateKeyGenerator
         public BigInteger Q = BigInteger.MinusOne;
         public BigInteger DP = BigInteger.MinusOne;
         public BigInteger DQ = BigInteger.MinusOne;
-        public BigInteger QInverse = BigInteger.MinusOne;
+        public BigInteger InverseQ = BigInteger.MinusOne;
 
         private int byteCount;
         private IEnumerable<byte> byteBuffer;
@@ -34,67 +34,34 @@ namespace CertificateKeyGenerator
         {
             byteCount = -1;
             byteBuffer = null;
-            Modulus = Exponent = D = P = Q = DP = DQ = QInverse = BigInteger.MinusOne;
+            Modulus = Exponent = D = P = Q = DP = DQ = InverseQ = BigInteger.MinusOne;
         }
 
-        private byte PeekBuffer()
+        public void ParseBuffer()
         {
-            return byteBuffer.First();
-        }
+            AssertNextValueIs(SequenceTag);
 
-        private byte TakeBuffer()
-        {
-            byte result = byteBuffer.First();
-            byteBuffer = byteBuffer.Skip(1);
-            return result;
-        }
+            byte prefixLength = TakeBuffer();
+            BigInteger bodyLength = EncodingUtility.CalculateValue(TakeBuffer(2));
 
-        private byte[] TakeBuffer(int count)
-        {
-            byte[] result = byteBuffer.Take(count).ToArray();
-            byteBuffer = byteBuffer.Skip(count);
-            return result;
-        }
-
-        private FormatException ThrowFormatException(object expected = null, object actual = null)
-        {
-            string additionalInfo = "";
-            if (expected != null && actual != null)
+            int bufferLen = byteBuffer.Count();
+            if (!bodyLength.Equals(bufferLen))
             {
-                int offset = byteCount - byteBuffer.Count();
-                additionalInfo = $"Byte #{offset}:  Expected value: {expected.ToString()}, Actual value: {actual.ToString()}.";
+                ThrowFormatException(bodyLength, bufferLen);
             }
 
-            throw new FormatException($"Not a valid Version 0 (private key) ASN.1 sequence. {additionalInfo}");
-        }
+            AssertNextValueIs(IntTag);
+            AssertNextValueIs(0x01);
+            AssertNextValueIs(Version0);
 
-        private void AssertNextValueIs(byte value)
-        {
-            byte bufferValue = TakeBuffer();
-            if (!bufferValue.Equals(value))
-            {
-                ThrowFormatException(bufferValue, value);
-            }
-        }
-
-        private void AssertNextValueIs(byte[] value)
-        {
-            byte[] chunk = TakeBuffer(value.Length);
-            if (chunk.Length != value.Length)
-            {
-                ThrowFormatException(chunk.Length, value.Length);
-            }
-
-            int counter = 0;
-            foreach (byte bite in chunk)
-            {
-                if (!bite.Equals(value[counter]))
-                {
-                    ThrowFormatException(bite, value[counter]);
-                }
-                counter++;
-            }
-            chunk = null;
+            Modulus = GetNextVariableValue();
+            Exponent = GetNextVariableValue();
+            D = GetNextVariableValue();
+            P = GetNextVariableValue();
+            Q = GetNextVariableValue();
+            DP = GetNextVariableValue();
+            DQ = GetNextVariableValue();
+            InverseQ = GetNextVariableValue();
         }
 
         private BigInteger GetNextVariableValue()
@@ -143,64 +110,109 @@ namespace CertificateKeyGenerator
             return variableValue;
         }
 
-        public void ParseBuffer()
+        private void AssertNextValueIs(byte[] value)
         {
-            AssertNextValueIs(SequenceTag);
-
-            byte prefixLength = TakeBuffer();
-            BigInteger bodyLength = EncodingUtility.CalculateValue(TakeBuffer(2));
-
-            int bufferLen = byteBuffer.Count();
-            if (!bodyLength.Equals(bufferLen))
+            byte[] chunk = TakeBuffer(value.Length);
+            if (chunk.Length != value.Length)
             {
-                ThrowFormatException(bodyLength, bufferLen);
+                ThrowFormatException(chunk.Length, value.Length);
             }
 
-            AssertNextValueIs(IntTag);
-            AssertNextValueIs(0x01);
-            AssertNextValueIs(Version0);
-
-            Modulus = GetNextVariableValue();
-            Exponent = GetNextVariableValue();
-            D = GetNextVariableValue();
-            P = GetNextVariableValue();
-            Q = GetNextVariableValue();
-            DP = GetNextVariableValue();
-            DQ = GetNextVariableValue();
-            QInverse = GetNextVariableValue();
+            int counter = 0;
+            foreach (byte bite in chunk)
+            {
+                if (!bite.Equals(value[counter]))
+                {
+                    ThrowFormatException(bite, value[counter]);
+                }
+                counter++;
+            }
+            chunk = null;
         }
 
-        /* **Format of RSAPrivateKey encoded in ASN.1**
-        SequenceTag, 1 byte;
-        Length of prefix, 1 byte;
-        Length of body, 2 bytes;
-        IntTag, 1 byte;
-        Value, 1 byte;
-        Version0, 1 byte;       
-        IntTag, 1 byte;
-        Length, 1 byte;
-        Value, Length bytes; // public modulus n (big-endian, leftmost bit is sign)       
-        IntTag, 1 byte;
-        Length, 1 byte;
-        Value, Length bytes; // public exponent e (big-endian, leftmost bit is sign)       
-        IntTag, 1 byte;
-        Length, 1 byte;
-        Value, Length bytes; // private exponent d (big-endian, leftmost bit is sign)       
-        IntTag, 1 byte;
-        Length, 1 byte;
-        Value, Length bytes; // secret prime p (big-endian, leftmost bit is sign)       
-        IntTag, 1 byte;
-        Length, 1 byte;
-        Value, Length bytes; // secret prime q (big-endian, leftmost bit is sign)       
-        IntTag, 1 byte;
-        Length, 1 byte;
-        Value, Length bytes; // dp=d mod p−1 (big-endian, leftmost bit is sign)       
-        IntTag, 1 byte;
-        Length, 1 byte;
-        Value, Length bytes; // dq=d mod q−1 (big-endian, leftmost bit is sign)       
-        IntTag, 1 byte;
-        Length, 1 byte;
-        Value, Length bytes; // qinv=q^−1 mod p (big-endian, leftmost bit is sign)
-        */
+        private void AssertNextValueIs(byte value)
+        {
+            byte bufferValue = TakeBuffer();
+            if (!bufferValue.Equals(value))
+            {
+                ThrowFormatException(bufferValue, value);
+            }
+        }
+
+        private byte[] TakeBuffer(int count)
+        {
+            byte[] result = byteBuffer.Take(count).ToArray();
+            byteBuffer = byteBuffer.Skip(count);
+            return result;
+        }
+
+        private byte TakeBuffer()
+        {
+            byte result = byteBuffer.First();
+            byteBuffer = byteBuffer.Skip(1);
+            return result;
+        }
+
+        private byte PeekBuffer()
+        {
+            return byteBuffer.First();
+        }
+
+        private FormatException ThrowFormatException(object expected = null, object actual = null)
+        {
+            string additionalInfo = "";
+            if (expected != null && actual != null)
+            {
+                additionalInfo = $"Byte #{(byteCount - byteBuffer.Count())}:  Expected value: {expected.ToString()}, Actual value: {actual.ToString()}.";
+            }
+            throw new FormatException($"Not a valid Version 0 (private key) ASN.1 sequence. {additionalInfo}");
+        }
     }
 }
+
+/* ################################################################## */
+/* #                                                                # */
+/* #      **** Format of RSAPrivateKey encoded in ASN.1 ******      # */
+/* #                                                                # */
+/* ################################################################## */
+
+/*
+
+    SequenceTag = 0x30; // ASN.1 tag for sequence
+    IntTag = 0x02;      // ASN.1 tag for int; Length encoded on next byte
+    Version0 = 0x00;    // Version 0; RSA private key with 2 primes
+
+*//*
+
+    SequenceTag, 1 byte;
+    Length of prefix, 1 byte;
+    Length of body, 2 bytes;
+    IntTag, 1 byte;
+    Value, 1 byte;
+    Version0, 1 byte;       
+    IntTag, 1 byte;
+    Length, 1 byte;
+    Value, Length bytes; // public modulus n (big-endian, leftmost bit is sign)       
+    IntTag, 1 byte;
+    Length, 1 byte;
+    Value, Length bytes; // public exponent e (big-endian, leftmost bit is sign)       
+    IntTag, 1 byte;
+    Length, 1 byte;
+    Value, Length bytes; // private exponent d (big-endian, leftmost bit is sign)       
+    IntTag, 1 byte;
+    Length, 1 byte;
+    Value, Length bytes; // secret prime p (big-endian, leftmost bit is sign)       
+    IntTag, 1 byte;
+    Length, 1 byte;
+    Value, Length bytes; // secret prime q (big-endian, leftmost bit is sign)       
+    IntTag, 1 byte;
+    Length, 1 byte;
+    Value, Length bytes; // dp=d mod p−1 (big-endian, leftmost bit is sign)       
+    IntTag, 1 byte;
+    Length, 1 byte;
+    Value, Length bytes; // dq=d mod q−1 (big-endian, leftmost bit is sign)       
+    IntTag, 1 byte;
+    Length, 1 byte;
+    Value, Length bytes; // qinv=q^−1 mod p (big-endian, leftmost bit is sign)
+
+*/

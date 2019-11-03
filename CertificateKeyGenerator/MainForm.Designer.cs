@@ -34,8 +34,6 @@
             this.btnExtractPvkSelectFiles = new System.Windows.Forms.Button();
             this.cbExtractDeleteFiles = new System.Windows.Forms.CheckBox();
             this.btnExtractXmlSelectFiles = new System.Windows.Forms.Button();
-            this.radioExtractPQOnly = new System.Windows.Forms.RadioButton();
-            this.radioExtractWholeKey = new System.Windows.Forms.RadioButton();
             this.groupExtractFromStore = new System.Windows.Forms.GroupBox();
             this.panelExtractKeystoreCombo = new System.Windows.Forms.Panel();
             this.comboExtractKeystoreName = new System.Windows.Forms.ComboBox();
@@ -59,6 +57,7 @@
             this.btnGenerateOpenSSL = new System.Windows.Forms.Button();
             this.tbGenerateOpenSSLCommandText = new System.Windows.Forms.TextBox();
             this.groupAllControls = new System.Windows.Forms.Panel();
+            this.cbExportOnlyPQ = new System.Windows.Forms.CheckBox();
             this.groupExtract.SuspendLayout();
             this.groupExtractFromFiles.SuspendLayout();
             this.groupExtractFromStore.SuspendLayout();
@@ -86,23 +85,23 @@
             // 
             // groupExtractFromFiles
             // 
+            this.groupExtractFromFiles.Controls.Add(this.cbExportOnlyPQ);
             this.groupExtractFromFiles.Controls.Add(this.btnExtractFolderCertBegin);
             this.groupExtractFromFiles.Controls.Add(this.btnExtractPvkSelectFiles);
             this.groupExtractFromFiles.Controls.Add(this.cbExtractDeleteFiles);
             this.groupExtractFromFiles.Controls.Add(this.btnExtractXmlSelectFiles);
-            this.groupExtractFromFiles.Controls.Add(this.radioExtractPQOnly);
-            this.groupExtractFromFiles.Controls.Add(this.radioExtractWholeKey);
             this.groupExtractFromFiles.Location = new System.Drawing.Point(18, 72);
             this.groupExtractFromFiles.Name = "groupExtractFromFiles";
             this.groupExtractFromFiles.Size = new System.Drawing.Size(576, 69);
             this.groupExtractFromFiles.TabIndex = 4;
             this.groupExtractFromFiles.TabStop = false;
-            this.groupExtractFromFiles.Text = "From <RSAKeyValue> XML files or PVK files";
+            this.groupExtractFromFiles.Text = "Extract and save <RSAKeyValue> data from: *.xml files, *.pvk files OR *.cer files" +
+    "";
             // 
             // btnExtractFolderCertBegin
             // 
             this.btnExtractFolderCertBegin.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnExtractFolderCertBegin.Location = new System.Drawing.Point(469, 18);
+            this.btnExtractFolderCertBegin.Location = new System.Drawing.Point(234, 19);
             this.btnExtractFolderCertBegin.Name = "btnExtractFolderCertBegin";
             this.btnExtractFolderCertBegin.Size = new System.Drawing.Size(100, 23);
             this.btnExtractFolderCertBegin.TabIndex = 2;
@@ -113,7 +112,7 @@
             // btnExtractPvkSelectFiles
             // 
             this.btnExtractPvkSelectFiles.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnExtractPvkSelectFiles.Location = new System.Drawing.Point(366, 18);
+            this.btnExtractPvkSelectFiles.Location = new System.Drawing.Point(131, 19);
             this.btnExtractPvkSelectFiles.Name = "btnExtractPvkSelectFiles";
             this.btnExtractPvkSelectFiles.Size = new System.Drawing.Size(100, 23);
             this.btnExtractPvkSelectFiles.TabIndex = 3;
@@ -124,47 +123,24 @@
             // cbExtractDeleteFiles
             // 
             this.cbExtractDeleteFiles.AutoSize = true;
-            this.cbExtractDeleteFiles.Location = new System.Drawing.Point(270, 44);
+            this.cbExtractDeleteFiles.Location = new System.Drawing.Point(154, 46);
             this.cbExtractDeleteFiles.Name = "cbExtractDeleteFiles";
-            this.cbExtractDeleteFiles.Size = new System.Drawing.Size(151, 17);
+            this.cbExtractDeleteFiles.Size = new System.Drawing.Size(186, 17);
             this.cbExtractDeleteFiles.TabIndex = 1;
-            this.cbExtractDeleteFiles.Text = "Delete files after extraction";
+            this.cbExtractDeleteFiles.Text = "Delete source files after extraction";
             this.cbExtractDeleteFiles.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.cbExtractDeleteFiles.UseVisualStyleBackColor = true;
             // 
             // btnExtractXmlSelectFiles
             // 
             this.btnExtractXmlSelectFiles.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnExtractXmlSelectFiles.Location = new System.Drawing.Point(263, 18);
+            this.btnExtractXmlSelectFiles.Location = new System.Drawing.Point(28, 19);
             this.btnExtractXmlSelectFiles.Name = "btnExtractXmlSelectFiles";
             this.btnExtractXmlSelectFiles.Size = new System.Drawing.Size(100, 23);
             this.btnExtractXmlSelectFiles.TabIndex = 2;
             this.btnExtractXmlSelectFiles.Text = "Select XML files...";
             this.btnExtractXmlSelectFiles.UseVisualStyleBackColor = true;
             this.btnExtractXmlSelectFiles.Click += new System.EventHandler(this.btnExtractXmlSelectFiles_Click);
-            // 
-            // radioExtractPQOnly
-            // 
-            this.radioExtractPQOnly.AutoSize = true;
-            this.radioExtractPQOnly.Checked = true;
-            this.radioExtractPQOnly.Location = new System.Drawing.Point(30, 21);
-            this.radioExtractPQOnly.Name = "radioExtractPQOnly";
-            this.radioExtractPQOnly.Size = new System.Drawing.Size(74, 17);
-            this.radioExtractPQOnly.TabIndex = 1;
-            this.radioExtractPQOnly.TabStop = true;
-            this.radioExtractPQOnly.Text = "P && Q only";
-            this.radioExtractPQOnly.UseVisualStyleBackColor = true;
-            // 
-            // radioExtractWholeKey
-            // 
-            this.radioExtractWholeKey.AutoSize = true;
-            this.radioExtractWholeKey.Location = new System.Drawing.Point(30, 43);
-            this.radioExtractWholeKey.Name = "radioExtractWholeKey";
-            this.radioExtractWholeKey.Size = new System.Drawing.Size(56, 17);
-            this.radioExtractWholeKey.TabIndex = 0;
-            this.radioExtractWholeKey.TabStop = true;
-            this.radioExtractWholeKey.Text = "All of it";
-            this.radioExtractWholeKey.UseVisualStyleBackColor = true;
             // 
             // groupExtractFromStore
             // 
@@ -428,6 +404,18 @@
             this.groupAllControls.Size = new System.Drawing.Size(610, 370);
             this.groupAllControls.TabIndex = 7;
             // 
+            // cbExportOnlyPQ
+            // 
+            this.cbExportOnlyPQ.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.cbExportOnlyPQ.AutoSize = true;
+            this.cbExportOnlyPQ.Location = new System.Drawing.Point(70, 46);
+            this.cbExportOnlyPQ.Name = "cbExportOnlyPQ";
+            this.cbExportOnlyPQ.Size = new System.Drawing.Size(77, 17);
+            this.cbExportOnlyPQ.TabIndex = 9;
+            this.cbExportOnlyPQ.Text = "Only P && Q";
+            this.cbExportOnlyPQ.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.cbExportOnlyPQ.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -477,8 +465,6 @@
         private System.Windows.Forms.ComboBox comboExtractKeystoreName;
         private System.Windows.Forms.ComboBox comboExtractKeystoreLocation;
         private System.Windows.Forms.GroupBox groupExtractFromFiles;
-        private System.Windows.Forms.RadioButton radioExtractPQOnly;
-        private System.Windows.Forms.RadioButton radioExtractWholeKey;
         private System.Windows.Forms.Button btnExtractXmlSelectFiles;
         private System.Windows.Forms.Button btnExtractPvkSelectFiles;
         private System.Windows.Forms.Panel panelCancel;
@@ -488,6 +474,7 @@
         private System.Windows.Forms.Button btnGenerateOpenSSL;
         private System.Windows.Forms.TextBox tbGenerateOpenSSLCommandText;
         private System.Windows.Forms.Panel groupAllControls;
+        private System.Windows.Forms.CheckBox cbExportOnlyPQ;
     }
 }
 

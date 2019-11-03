@@ -1,19 +1,22 @@
 ﻿using System;
+using System.IO;
 using System.Xml;
 using System.Text;
 using System.Linq;
 using System.Xml.Linq;
 using System.Numerics;
 using System.Xml.XPath;
-using System.Collections.Generic;
-using System.IO;
 using System.Collections;
+using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Diagnostics.Contracts;
 
 namespace CertificateKeyGenerator
 {
     public static class EncodingUtility
     {
         private static string RSAKeyValue = "RSAKeyValue";
+        private static BigInteger ByteMax = new BigInteger(256);
 
         public static string[] ExtractPandQ(string xmlString)
         {
@@ -46,7 +49,25 @@ namespace CertificateKeyGenerator
             return xdoc.ToString(SaveOptions.None);
         }
 
-        private static BigInteger ByteMax = new BigInteger(256);
+        public static byte[] AsBytes(BigInteger value)
+        {
+            byte[] results = value.ToByteArray();
+            Array.Reverse(results);
+            return results;
+        }
+
+        public static void AssertValidRSAPrivateKey(ANS1PrivateKey key)
+        {
+            BigInteger pMinusOne = (key.P - 1);
+            BigInteger qMinusOne = (key.Q - 1);
+            BigInteger phi = BigInteger.Multiply(pMinusOne, qMinusOne);
+
+            Contract.Assert(key.Modulus == (key.P * key.Q), "Modulus ≠ P*Q");
+            Contract.Assert(key.DP == (key.D % pMinusOne), "DP ≢ D (mod P-1)");
+            Contract.Assert(key.DQ == (key.D % qMinusOne), "DQ ≢ D (mod Q-1)");
+            Contract.Assert(1 == ((key.D * key.Exponent) % phi), "D*Exponent ≢ 1 (mod phi(N))"); // (d) (e) mod phi(n) = 1
+            Contract.Assert(1 == ((key.InverseQ * key.Q) % key.P), "Q*Q¯¹ ≢ 1 (mod P)"); //(InverseQ)(q) = 1 mod p
+        }
 
         internal static BigInteger CalculateValue(byte[] input)
         {

@@ -12,72 +12,94 @@ namespace CertificateKeyGenerator
 {
     public class ExtractPvkFile
     {
+        private int BatchSize;
         private bool DeleteFiles;
+        private bool ExportOnlyPQ;
         private string OutputFilename;
         private string SearchDirectory;
         private IEnumerable<string> FilePaths;
-        private CancellationToken cancel;
+        private CancellationToken CancelToken;
 
-        private static string SearchExtension = "*.pvk";
+        private static byte[] EmptyByteArray = new byte[0];
+        //private static string SearchExtension = "*.pvk";
+        private static string[] SearchExtensions = new string[] { "*.pvk", "*.key" };
         private static string[] Header = new string[] { "-----BEGIN RSA PRIVATE KEY-----", "-----BEGIN PRIVATE KEY-----", "-----", "PRIVATE KEY", "BEGIN ", "END ", "RSA ", "-" };
         private static string[] Footer = new string[] { "-----END RSA PRIVATE KEY-----", "-----END PRIVATE KEY-----" };
 
-        public ExtractPvkFile(CancellationToken cancelToken, string searchDirectory, string outFile, bool deleteFilesAfter)
-            : this(searchDirectory, outFile, deleteFilesAfter)
-        {
-            cancel = cancelToken;
-        }
-
-        public ExtractPvkFile(string searchDirectory, string outFile, bool deleteFilesAfter)
+        public ExtractPvkFile(CancellationToken cancelToken, string searchDirectory, string outFile, bool deleteFilesAfter, bool exportOnlyPQ, int batchSize = 1000)
         {
             if (!Directory.Exists(searchDirectory)) { throw new DirectoryNotFoundException(searchDirectory); }
 
+            CancelToken = cancelToken;
             OutputFilename = outFile;
             SearchDirectory = searchDirectory;
             DeleteFiles = deleteFilesAfter;
+            ExportOnlyPQ = exportOnlyPQ;
+            BatchSize = batchSize;
         }
 
         public void Begin()
         {
-            if (cancel.IsCancellationRequested)
+            if (CancelToken.IsCancellationRequested)
             {
                 return;
             }
-            FilePaths = Directory.EnumerateFiles(SearchDirectory, SearchExtension, SearchOption.TopDirectoryOnly);
+
+            FilePaths = SearchExtensions.SelectMany(searchPattern => Directory.EnumerateFiles(SearchDirectory, searchPattern, SearchOption.TopDirectoryOnly));
+            //FilePaths = Directory.EnumerateFiles(SearchDirectory, SearchExtension, SearchOption.TopDirectoryOnly);
 
             if (FilePaths == null)
             {
                 throw new Exception("No files to process!");
             }
 
-            // Could be config setting
-            int batchSize = 1000;
-
-            int counter = 0;
             byte[] bytes = new byte[] { };
             ANS1PrivateKey ans1Key = null;
             StringBuilder output = new StringBuilder();
 
-            var pathBatch = FilePaths.Take(batchSize);
+            List<string> filesToDelete = new List<string>();
 
-            while (pathBatch.Any() && !cancel.IsCancellationRequested)
+            IEnumerable<string> pathBatch = FilePaths.Take(BatchSize);
+
+            while (pathBatch.Any() && !CancelToken.IsCancellationRequested)
             {
                 foreach (string file in pathBatch)
                 {
                     bytes = GetEncodedBytes(file);
+
                     if (bytes == null)
                     {
                         continue;
+                    }
+                    else if (bytes == EmptyByteArray)
+                    {
+                        if (DeleteFiles)
+                        {
+                            filesToDelete.Add(file);
+                        }
                     }
 
                     using (ans1Key = new ANS1PrivateKey(bytes))
                     {
                         ans1Key.ParseBuffer();
-                        output.AppendLine(ans1Key.P.ToString());
-                        output.AppendLine(ans1Key.Q.ToString());
 
-                        counter++;
-                        DeleteFile(file);
+                        EncodingUtility.AssertValidRSAPrivateKey(ans1Key);
+
+                        if (ExportOnlyPQ)
+                        {
+                            PrivateKeySerializer.WritePQDocument(output, ans1Key);
+                        }
+                        else
+                        {
+                            PrivateKeySerializer.WriteXMLDocument(output, ans1Key);
+                        }
+
+                        bytes = null;
+
+                        if (DeleteFiles)
+                        {
+                            filesToDelete.Add(file);
+                        }
                     }
                 }
 
@@ -85,8 +107,17 @@ namespace CertificateKeyGenerator
                 output.Clear();
                 bytes = null;
 
-                FilePaths = FilePaths.Skip(batchSize);
-                pathBatch = FilePaths.Take(batchSize);
+                if (DeleteFiles && filesToDelete.Any())
+                {
+                    foreach (string file in filesToDelete)
+                    {
+                        File.Delete(file);
+                    }
+                    filesToDelete.Clear();
+                }
+
+                FilePaths = FilePaths.Skip(BatchSize);
+                pathBatch = FilePaths.Take(BatchSize);
             }
         }
 
@@ -97,11 +128,10 @@ namespace CertificateKeyGenerator
                 return null;
             }
 
-            string fileText = File.ReadAllText(filename);
-            if (string.IsNullOrWhiteSpace(fileText))
+            StringBuilder fileText = new StringBuilder(File.ReadAllText(filename));
+            if (fileText.Length == 0 || string.IsNullOrWhiteSpace(fileText.ToString()))
             {
-                DeleteFile(filename);
-                return null;
+                return EmptyByteArray;
             }
 
             // Remove file headers, footers, and stuff that is not part of the base64 encoded data
@@ -115,18 +145,10 @@ namespace CertificateKeyGenerator
             }
             fileText = fileText.Replace("\t", "").Replace("\r", "").Replace("\n", "");
 
-            byte[] result = Convert.FromBase64String(fileText);
+            byte[] result = Convert.FromBase64String(fileText.ToString());
+            fileText.Clear();
             fileText = null;
             return result;
         }
-
-        private void DeleteFile(string filename)
-        {
-            if (DeleteFiles && File.Exists(filename))
-            {
-                File.Delete(filename);
-            }
-        }
-
     }
 }
